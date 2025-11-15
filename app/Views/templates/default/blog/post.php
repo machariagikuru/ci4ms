@@ -1,10 +1,12 @@
 <?= $this->extend('Views/templates/default/base') ?>
 <?= $this->section('metatags') ?>
-<?= $seo ?>
+<?= $seo ?? '' ?>
 <?= $this->endSection() ?>
+
 <?= $this->section('head') ?>
-<?= link_tag('templates/' . $settings->templateInfos->path . '/assets/node_modules/sweetalert2/dist/sweetalert2.min.css') ?>
+<?= link_tag('templates/' . ($settings->templateInfos->path ?? 'default') . '/assets/node_modules/sweetalert2/dist/sweetalert2.min.css') ?>
 <?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
 <section class="py-5">
     <div class="container px-5 my-5">
@@ -16,54 +18,67 @@
                     <div onload=""></div>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
-                            <?php foreach ($breadcrumbs as $breadcrumb) { ?>
-                                <li class="breadcrumb-item <?= (empty($breadcrumb['url'])) ? 'active' : '' ?>"
-                                    <?= (empty($breadcrumb['url'])) ? 'aria-current="page"' : '' ?>>
-                                    <?php if (empty($breadcrumb['url'])) { ?>
+                            <?php foreach ($breadcrumbs as $breadcrumb): ?>
+                                <li class="breadcrumb-item <?= empty($breadcrumb['url']) ? 'active' : '' ?>"
+                                    <?= empty($breadcrumb['url']) ? 'aria-current="page"' : '' ?>>
+                                    <?php if (empty($breadcrumb['url'])): ?>
                                         <?= esc($breadcrumb['title']) ?>
-                                    <?php } else { ?>
+                                    <?php else: ?>
                                         <a href="<?= site_url($breadcrumb['url']) ?>">
                                             <?= esc($breadcrumb['title']) ?>
                                         </a>
-                                    <?php } ?>
+                                    <?php endif; ?>
                                 </li>
-                            <?php } ?>
+                            <?php endforeach; ?>
                         </ol>
                     </nav>
                     <header class="mb-4">
                         <!-- Post title-->
-                        <h1 class="fw-bolder mb-1"><?= esc($infos->title) ?></h1>
+                        <h1 class="fw-bolder mb-1"><?= esc($infos->title ?? '') ?></h1>
                         <!-- Post meta content-->
-                        <? if ($infos->created_at != '0000-00-00 00:00:00'): ?>
-                            <div class="text-muted fst-italic mb-2"><?= $dateI18n->createFromTimestamp(strtotime($infos->created_at), app_timezone(), 'tr_TR')->toFormattedDateString(); ?></div>
+                        <?php if (!empty($infos->created_at) && $infos->created_at !== '0000-00-00 00:00:00'): ?>
+                            <div class="text-muted fst-italic mb-2">
+                                <?= $dateI18n->createFromTimestamp(strtotime($infos->created_at), app_timezone(), 'tr_TR')->toFormattedDateString(); ?>
+                            </div>
                         <?php endif; ?>
                         <!-- Post categories-->
-                        <?php foreach ($tags as $tag): ?>
-                            <a class="badge bg-secondary text-decoration-none link-light"
-                                href="<?= route_to('tag', $tag->seflink) ?>"><?= esc($tag->tag) ?></a>
-                        <?php endforeach; ?>
+                        <?php if (!empty($tags) && is_array($tags)): ?>
+                            <?php foreach ($tags as $tag): ?>
+                                <a class="badge bg-secondary text-decoration-none link-light"
+                                    href="<?= route_to('tag', $tag->seflink ?? '') ?>">
+                                    <?= esc($tag->tag ?? '') ?>
+                                </a>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </header>
                     <!-- Preview image figure-->
                     <figure class="mb-4">
-                        <img class="img-fluid rounded" src="<?= esc($infos->seo->coverImage) ?>"
-                            alt="<?= esc($infos->title) ?>" />
+                        <img class="img-fluid rounded"
+                            src="<?= isset($infos->seo->coverImage) ? esc($infos->seo->coverImage) : 'https://dummyimage.com/600x400/ced4da/6c757d' ?>"
+                            alt="<?= esc($infos->title ?? '') ?>" />
                     </figure>
                     <!-- Post content-->
                     <section class="mb-5">
-                        <?= $infos->content ?>
+                        <?= $infos->content ?? '' ?>
                     </section>
                     <hr>
                     <div class="d-flex align-items-center mt-lg-5 mb-4">
                         <?php if (empty($authorInfo->profileIMG)): ?>
-                            <img class="img-fluid rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg"
-                                alt="<?= esc($authorInfo->firstname) . ' ' . esc($authorInfo->sirname) ?>" />
+                            <img class="img-fluid rounded-circle"
+                                src="https://dummyimage.com/50x50/ced4da/6c757d.jpg"
+                                alt="<?= esc(($authorInfo->firstname ?? '') . ' ' . ($authorInfo->sirname ?? '')) ?>" />
                         <?php else: ?>
-                            <img class="img-fluid rounded-circle" src="<?= esc($authorInfo->profileIMG) ?>"
-                                alt="<?= esc($authorInfo->firstname) . ' ' . esc($authorInfo->sirname) ?>" />
+                            <img class="img-fluid rounded-circle"
+                                src="<?= esc($authorInfo->profileIMG) ?>"
+                                alt="<?= esc(($authorInfo->firstname ?? '') . ' ' . ($authorInfo->sirname ?? '')) ?>" />
                         <?php endif; ?>
                         <div class="ms-3">
-                            <div class="fw-bold"><?= esc($authorInfo->firstname) . ' ' . esc($authorInfo->sirname) ?></div>
-                            <div class="text-muted"><?= esc($authorInfo->groupName) ?></div>
+                            <div class="fw-bold">
+                                <?= esc(($authorInfo->firstname ?? '') . ' ' . ($authorInfo->sirname ?? '')) ?>
+                            </div>
+                            <div class="text-muted">
+                                <?= esc($authorInfo->groupName ?? '') ?>
+                            </div>
                         </div>
                     </div>
                 </article>
@@ -95,32 +110,35 @@
                                 </div>
                                 <div class="col-6 form-group text-end">
                                     <button class="btn btn-primary btn-sm sendComment" type="button" data-id=""
-                                        data-blogid="<?= $infos->id ?>">Send
+                                        data-blogid="<?= esc($infos->id ?? '') ?>">Send
                                     </button>
                                 </div>
                             </form>
-                            <?php if (!empty($comments)) { ?>
+                            <?php if (!empty($comments)): ?>
                                 <hr>
                                 <div id="comments">
-                                    <?= comments($comments, $infos->id); ?>
+                                    <?= comments($comments, $infos->id ?? ''); ?>
                                 </div>
                                 <div class="d-flex">
                                     <div class="w-100">
-                                        <button class="btn btn-warning w-100" onclick="loadMore('<?= $infos->id ?>')" id="loadMore" data-skip="5" data-defskip="5"><i class=""></i> Load More</button>
+                                        <button class="btn btn-warning w-100" onclick="loadMore('<?= esc($infos->id ?? '') ?>')" id="loadMore" data-skip="5" data-defskip="5">
+                                            <i class=""></i> Load More
+                                        </button>
                                     </div>
                                 </div>
-                            <?php } ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </section>
             </div>
-            <?php if (!empty($settings->templateInfos->widgets->sidebar)):
-                echo view('templates/default/widgets/sidebar');
-            endif; ?>
+            <?php if (!empty($settings->templateInfos->widgets->sidebar)): ?>
+                <?= view('templates/default/widgets/sidebar') ?>
+            <?php endif; ?>
         </div>
     </div>
 </section>
 <?= $this->endSection() ?>
+
 <?= $this->section('javascript') ?>
-<?= script_tag('templates/' . $settings->templateInfos->path . '/assets/node_modules/sweetalert2/dist/sweetalert2.all.min.js') ?>
+<?= script_tag('templates/' . ($settings->templateInfos->path ?? 'default') . '/assets/node_modules/sweetalert2/dist/sweetalert2.all.min.js') ?>
 <?= $this->endSection() ?>
