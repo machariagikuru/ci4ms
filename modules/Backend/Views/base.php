@@ -63,7 +63,7 @@
                         <span><i class="fas fa-user"></i> <a class="link-black" href="<?= route_to('profile') ?>">Profil</a></span>
                         <div class="dropdown-divider"></div>
                         <span><i class="fas fa-sign-out-alt"></i> <a class="link-black"
-                                href="<?= route_to('logout') ?>">Çıkış Yap</a></span>
+                                href="<?= route_to('logout') ?>">Log Out</a></span>
                     </div>
                 </div>
 

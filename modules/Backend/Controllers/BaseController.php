@@ -63,7 +63,7 @@ class BaseController extends Controller
         } else $uri = $this->request->getUri()->getSegment(1);
         $router = service('router');
         $searchValues = [str_replace('\\', '-', $router->controllerName()), $router->methodName()];
-        $perms = array_reduce(cache(session()->get($this->config->logged_in) . '_permissions'), fn($carry, $item) => $carry ?? ($item['className'] === $searchValues[0] && $item['methodName'] === $searchValues[1] ? $item : null));
+        $perms = array_reduce(cache(session()->get($this->config->logged_in) . '_permissions') ?? [], fn($carry, $item) => $carry ?? ($item['className'] === $searchValues[0] && $item['methodName'] === $searchValues[1] ? $item : null));
         $this->defData = [
             'config' => $this->config,
             'logged_in_user' => $this->logged_in_user,

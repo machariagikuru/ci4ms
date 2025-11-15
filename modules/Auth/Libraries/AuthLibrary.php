@@ -533,7 +533,7 @@ class AuthLibrary
     {
         $searchValues = [1];
         $navigation = array_filter(
-            cache(session()->get($this->config->logged_in) . '_permissions'),
+            cache(session()->get($this->config->logged_in) . '_permissions') ?? [],
             fn($item) => (bool) $item['inNavigation'] === (bool) $searchValues[0]
         );
         $nav = array_filter($navigation, fn($item) => $this->has_perm($item['className'], $item['methodName']));
