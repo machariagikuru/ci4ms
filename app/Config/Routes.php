@@ -27,6 +27,12 @@ $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override('App\Controllers\Errors::error404');
 
+// Public auth routes — add these inside the route group or at the top level
+$routes->get('register', 'Home::register');
+$routes->post('register', 'Home::registerPost');
+$routes->get('login', 'Home::login');
+$routes->post('login', 'Home::loginPost');
+$routes->get('logout', 'Home::logout');
 
 /**
  * --------------------------------------------------------------------

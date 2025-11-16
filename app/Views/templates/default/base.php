@@ -23,9 +23,9 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container px-5">
                 <a class="navbar-brand" href="<?= base_url() ?>">
-                    <?php if (empty($settings->logo)):
-                        echo esc($settings->siteName);
-                    else: ?>
+                    <?php if (empty($settings->logo)): ?>
+                        <?= esc($settings->siteName) ?>
+                    <?php else: ?>
                         <img src="<?= esc($settings->logo) ?>" alt="<?= esc($settings->siteName) ?>" class="img-fluid">
                     <?php endif; ?>
                 </a>
@@ -35,12 +35,36 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <?php menu($menus); ?>
+                        <?php menu($menus ?? []); ?>
                         <li class="nav-item">
-                        <button class="btn btn-outline-secondary border-0 fw-bold" data-bs-toggle="modal" data-bs-target="#searchModal">
-            <i class="bi bi-search"></i> Search
-        </button>
+                            <button class="btn btn-outline-secondary border-0 fw-bold" data-bs-toggle="modal" data-bs-target="#searchModal">
+                                <i class="bi bi-search"></i> Search
+                            </button>
                         </li>
+
+                        <!-- Authentication Buttons -->
+                        <?php
+                        $authLib = new \Modules\Auth\Libraries\AuthLibrary();
+                        if ($authLib->isLoggedIn()):
+                            $user = $authLib->getUser(); // ✅ Use public method
+                            $displayName = $user ? esc($user->firstname ?? 'User') : 'User';
+                            ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Hello, <?= $displayName ?>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="<?= base_url('logout') ?>">Logout</a></li>
+                                </ul>
+                            </li>
+                        <?php else: ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= base_url('login') ?>">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= base_url('register') ?>">Register</a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </div>
@@ -65,14 +89,14 @@
         </div>
     </footer>
     <div class="modal fade modal-search" id="searchModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <input type="text" id="product-search" class="form-control" placeholder="Type to search...">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <input type="text" id="product-search" class="form-control" placeholder="Type to search...">
+                </div>
             </div>
         </div>
     </div>
-</div>
     <!-- Bootstrap core JS-->
     <script src="/templates/default/assets/node_modules/@popperjs/core/dist/umd/popper.min.js"></script>
     <script src="/templates/default/assets/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

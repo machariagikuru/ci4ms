@@ -107,13 +107,13 @@
                 <div class="form-group col-md-9 d-flex align-items-end">
                     <div class="w-100 btn-group btn-group-toggle" data-toggle="buttons">
                         <label class="btn btn-outline-primary <?= $method->inNavigation == true ? 'active' : '' ?>">
-                            <input class="custom-control-input" value="1" name="inNavigation" type="checkbox" id="inNavigation" <?= $method->inNavigation == true ? 'checked' : '' ?>> Menüde mi ?
+                            <input class="custom-control-input" value="1" name="inNavigation" type="checkbox" id="inNavigation" <?= $method->inNavigation == true ? 'checked' : '' ?>> In the menu ?
                         </label>
                         <label class="btn btn-outline-primary <?= $method->isBackoffice == true ? 'active' : '' ?>">
-                            <input class="custom-control-input" value="1" name="isBackoffice" type="checkbox" id="isBackoffice" <?= $method->isBackoffice == true ? 'checked' : '' ?>> Panelde mi ?
+                            <input class="custom-control-input" value="1" name="isBackoffice" type="checkbox" id="isBackoffice" <?= $method->isBackoffice == true ? 'checked' : '' ?>> In the panel ?
                         </label>
                         <label class="btn btn-outline-primary <?= $method->hasChild == true ? 'active' : '' ?>">
-                            <input class="custom-control-input" value="1" name="hasChild" type="checkbox" id="hasChild" <?= $method->hasChild == true ? 'checked' : '' ?>> Alt sayfası var mı ?
+                            <input class="custom-control-input" value="1" name="hasChild" type="checkbox" id="hasChild" <?= $method->hasChild == true ? 'checked' : '' ?>> Does it have child pages?
                         </label>
                     </div>
                 </div>

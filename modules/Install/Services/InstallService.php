@@ -163,7 +163,7 @@ class InstallService
 
         // --- pages ---
         $pages = [
-            ['id' => 1, 'title' => 'Hakkımızda', 'content' => '<!-- About section one-->
+            ['id' => 1, 'title' => 'About Us', 'content' => '<!-- About section one-->
             <section class="py-5 bg-light" id="scroll-target">
                 <div class="container px-5 my-5">
                     <div class="row gx-5 align-items-center">
@@ -225,7 +225,7 @@ class InstallService
                         </div>
                     </div>
                 </div>
-            </section>', 'seflink' => 'hakkimizda', 'isActive' => '1', 'seo' => '{"coverImage":"https:\\/\\/kun-cms\\/uploads\\/media\\/main-vector.png","IMGWidth":"398","IMGHeight":"249","description":"Ci4MS hakkında","keywords":[{"value":"hakkımızda"}]}', 'inMenu' => '1'],
+            </section>', 'seflink' => 'hakkimizda', 'isActive' => '1', 'seo' => '{"coverImage":"https:\\/\\/kun-cms\\/uploads\\/media\\/main-vector.png","IMGWidth":"398","IMGHeight":"249","description":"Ci4MS hakkında","keywords":[{"value":"About Us"}]}', 'inMenu' => '1'],
             ['id' => 2, 'title' => 'İletişim', 'content' => '<section class="py-5">
                 <div class="container px-5">
 {\\App\\Libraries\\templates\\default\\Ci4mstemplateLib|contactForm/}
@@ -255,7 +255,7 @@ class InstallService
                 </div>
 {\\App\\Libraries\\templates\\default\\Ci4mstemplateLib|gmapiframe/}
             </section>', 'seflink' => 'iletisim', 'isActive' => '1', 'seo' => '{"description":"Ci4MS iletişim"}', 'inMenu' => '1'],
-            ['id' => 3, 'title' => 'Anasayfa', 'content' => '<!-- Header-->
+            ['id' => 3, 'title' => 'Home Page', 'content' => '<!-- Header-->
 <header class="bg-dark py-5">
     <div class="container px-5">
         <div class="row gx-5 align-items-center justify-content-center">
@@ -324,7 +324,7 @@ class InstallService
             </div>
         </div>
     </div>
-</div>', 'seflink' => '/', 'isActive' => '1', 'seo' => '{"description":"Ci4MS anasayfa","keywords":[{"value":"anasayfa"}]}', 'inMenu' => '1']
+</div>', 'seflink' => '/', 'isActive' => '1', 'seo' => '{"description":"Ci4MS ","keywords":[{"value":"Home Page"}]}', 'inMenu' => '1']
         ];
 
         foreach ($pages as $page) {
@@ -338,9 +338,9 @@ class InstallService
         $db = \Config\Database::connect();
         if ($db->table('menu')->countAllResults() === 0) {
             $commonModel->createMany('menu', [
-                ['pages_id' => 1, 'parent' => NULL, 'queue' => 2, 'urlType' => 'pages', 'title' => 'Hakkımızda', 'seflink' => 'hakkimizda', 'target' => NULL, 'hasChildren' => 0],
+                ['pages_id' => 1, 'parent' => NULL, 'queue' => 2, 'urlType' => 'pages', 'title' => 'About Us', 'seflink' => 'hakkimizda', 'target' => NULL, 'hasChildren' => 0],
                 ['pages_id' => 2, 'parent' => NULL, 'queue' => 4, 'urlType' => 'pages', 'title' => 'İletişim', 'seflink' => 'iletisim', 'target' => NULL, 'hasChildren' => 0],
-                ['pages_id' => 3, 'parent' => NULL, 'queue' => 1, 'urlType' => 'pages', 'title' => 'Anasayfa', 'seflink' => '/', 'target' => NULL, 'hasChildren' => 0],
+                ['pages_id' => 3, 'parent' => NULL, 'queue' => 1, 'urlType' => 'pages', 'title' => 'Home Page', 'seflink' => '/', 'target' => NULL, 'hasChildren' => 0],
                 ['pages_id' => NULL, 'parent' => NULL, 'queue' => 3, 'urlType' => 'url', 'title' => 'Blog', 'seflink' => '/blog/1', 'target' => NULL, 'hasChildren' => 0]
             ]);
         }

@@ -29,7 +29,9 @@ class AuthLibrary
         $this->user = null;
         $this->config->userTable = 'users';
         $this->ipAddress = Services::request()->getIPAddress();
-        $this->now = Time::createFromFormat('Y-m-d H:i:s', (new Time('now'))->toDateTimeString(), getenv('app.appTimzezone'));
+        // Fixed typo: "appTimzezone" → "appTimezone"
+        $timezone = getenv('app.appTimezone') ?: 'UTC';
+        $this->now = Time::createFromFormat('Y-m-d H:i:s', (new Time('now'))->toDateTimeString(), $timezone);
         $settings = (object)cache()->get('settings');
         if (empty($settings)) {
             $settings = $this->commonModel->lists('settings');
@@ -45,6 +47,20 @@ class AuthLibrary
         }
     }
 
+    // --- NEW PUBLIC METHOD ---
+    /**
+     * Get the current logged-in user object (if any)
+     *
+     * @return object|null
+     */
+    public function getUser()
+    {
+        if ($this->isLoggedIn() && is_object($this->user)) {
+            return $this->user;
+        }
+        return null;
+    }
+
     public function login(object $user, bool $remember = false): bool
     {
         if (empty($user)) {
@@ -53,7 +69,6 @@ class AuthLibrary
         }
         $this->user = $user;
         $groupSefLink = $this->commonModel->selectOne('auth_groups', ['id' => $this->user->group_id], 'seflink');
-
 
         $where_or = ['username' => $user->email, 'ip_address' => $this->ipAddress];
         $set_data = ['islocked' => false];
@@ -69,8 +84,12 @@ class AuthLibrary
 
         Services::response()->noCache();
 
-        if ($remember && $this->config->allowRemembering) $this->rememberUser($this->user->id);
-        if (mt_rand(1, 100) < 20) $this->userModel->purgeOldRememberTokens();
+        if ($remember && $this->config->allowRemembering) {
+            $this->rememberUser($this->user->id);
+        }
+        if (mt_rand(1, 100) < 20) {
+            $this->userModel->purgeOldRememberTokens();
+        }
 
         // trigger login event, in case anyone cares
         Events::trigger('backend/login', $user);
@@ -108,13 +127,16 @@ class AuthLibrary
     public function isLoggedIn(): bool
     {
         if ($userID = session($this->config->logged_in)) {
-            // Store our current user object
-            if (session()->get('redirect_url') == null) {
+            if ($this->user === null) {
                 $this->user = $this->commonModel->selectOne($this->config->userTable, ['id' => $userID]);
-                $groupSefLink = $this->commonModel->selectOne('auth_groups', ['id' => $this->user->group_id], 'seflink');
-                session()->set('redirect_url', $groupSefLink->seflink);
             }
-            return true;
+            if ($this->user && session()->get('redirect_url') == null) {
+                $groupSefLink = $this->commonModel->selectOne('auth_groups', ['id' => $this->user->group_id], 'seflink');
+                if ($groupSefLink) {
+                    session()->set('redirect_url', $groupSefLink->seflink);
+                }
+            }
+            return $this->user !== null;
         }
 
         return false;
@@ -126,11 +148,12 @@ class AuthLibrary
         $response = Services::response();
         $response->deleteCookie($this->config->rememberCookie, $appConfig->domain, $appConfig->path, $appConfig->prefix);
         $oid = session($this->config->logged_in);
-        if ($userID = $oid) $this->user = $this->commonModel->selectOne($this->config->userTable, ['id' => $userID]);
+        $user = null;
+        if ($oid) {
+            $user = $this->commonModel->selectOne($this->config->userTable, ['id' => $oid]);
+        }
 
-        $user = $this->user;
-
-        // Destroy the session data - but ensure a session is still available for flash messages, etc.
+        // Destroy the session data
         if (isset($_SESSION)) {
             foreach ($_SESSION as $key => $value) {
                 $_SESSION[$key] = NULL;
@@ -138,19 +161,21 @@ class AuthLibrary
             }
         }
 
-        // Regenerate the session ID for a touch of added safety.
         session()->regenerate(true);
 
-        // Take care of any remember me functionality
-        $this->commonModel->remove('auth_tokens', ['user_id' => $user->id]);
+        // Clean up remember tokens
+        if ($user) {
+            $this->commonModel->remove('auth_tokens', ['user_id' => $user->id]);
+        }
 
         // trigger logout event
-        Events::trigger('logout', $user);
+        if ($user) {
+            Events::trigger('logout', $user);
+        }
     }
 
     public function attempt(array $credentials, bool $remember = false): bool
     {
-
         $this->user = $this->validate($credentials, true);
         $falseLogin = $this->commonModel->selectOne('auth_logins', ['ip_address' => $this->ipAddress], '*', 'id DESC');
         $settings = (object)cache('settings');
@@ -159,28 +184,24 @@ class AuthLibrary
         if ($falseLogin && $falseLogin->isSuccess === false) {
             if ($falseLogin->counter && ((int)$falseLogin->counter + 1) >= (int)$settings->locked->try) $falseCounter = -1;
             else $falseCounter = $falseLogin->counter;
-        } else $falseCounter = 0;
-
+        } else {
+            $falseCounter = 0;
+        }
 
         if (empty($this->user)) {
-            // Always record a login attempt, whether success or not.
             $this->recordLoginAttempt($credentials['email'], false, (int)$falseCounter);
             $this->user = null;
             return false;
         }
 
         if ($this->isBanned($this->user->id)) {
-            // Always record a login attempt, whether success or not.
             $this->recordLoginAttempt($credentials['email'], false, (int)$falseCounter);
-
             $this->error = lang('Auth.userIsBanned');
-
             $this->user = null;
             return false;
         }
 
         if (!$this->isActivated($this->user->id)) {
-            // Always record a login attempt, whether success or not.
             $this->recordLoginAttempt($credentials['email'], false, (int)$falseCounter);
 
             $param = http_build_query([
@@ -224,42 +245,31 @@ class AuthLibrary
 
     public function validate(array $credentials, bool $returnUser = false)
     {
-        // Can't validate without a password.
         if (empty($credentials['password']) || count($credentials) < 2) return false;
 
-        // Only allowed 1 additional credential other than password
         $password = $credentials['password'];
         unset($credentials['password']);
 
         if (count($credentials) > 1) throw AuthException::forTooManyCredentials();
 
-        // Ensure that the fields are allowed validation fields
         if (!in_array(key($credentials), $this->config->validFields)) throw AuthException::forInvalidFields(key($credentials));
 
-        // Can we find a user with those credentials?
         $user = $this->commonModel->selectOne($this->config->userTable, $credentials);
 
         if (!$user) {
             $this->error = lang('Auth.badAttempt');
-            //$this->error = sprintf(lang('Auth.badAttempt'), $this->remainingEntry());
             return false;
         }
 
-        // Now, try matching the passwords.
         $result = password_verify(base64_encode(
             hash('sha384', $password, true)
         ), $user->password_hash);
 
         if (!$result) {
             $this->error = sprintf(lang('Auth.invalidPassword'), '<br><b>Kalan deneme hakkınız ' . $this->remainingEntryCalculation() . ' tanedir.<b></b>');
-            //$this->error = lang('Auth.invalidPassword');
             return false;
         }
 
-        // Check to see if the password needs to be rehashed.
-        // This would be due to the hash algorithm or hash
-        // cost changing since the last time that a user
-        // logged in. $2y$10$XWe.Q5nGG3Nwdj3ihUnNl.HzYh3B4BeguvlgQ3NnrwD6MgyGiZmLm
         if (password_needs_rehash($user->password_hash, $this->config->hashAlgorithm)) {
             $user->password_hash = $this->setPassword($password);
             $this->commonModel->edit('users', (array)$user, ['id' => $user->id]);
@@ -289,7 +299,6 @@ class AuthLibrary
     {
         if ($this->isLoggedIn()) return true;
 
-        // Check the remember me functionality.
         $remember = Services::request()->getCookie(getenv('cookie.prefix') . $this->config->rememberCookie);
 
         if (empty($remember)) return false;
@@ -303,30 +312,26 @@ class AuthLibrary
 
         if ($token->expires > date('Y-m-d H:i:s') && hash_equals($token->hashedValidator, $validator)) {
             $user = $this->commonModel->selectOne($this->config->userTable, ['id' => $token->user_id]);
-            // We only want our remember me tokens to be valid for a single use.
-            $this->refreshRemember($user->id, $selector);
+            if ($user) {
+                $this->refreshRemember($user->id, $selector);
+                $this->login($user);
+                return true;
+            }
         }
 
-        if (empty($user)) return false;
-
-        $this->login($user);
-
-        return true;
+        return false;
     }
 
     public function refreshRemember(int $userID, string $selector)
     {
         $existing = $this->commonModel->selectOne('auth_tokens', ['selector' => $selector]);
 
-        // No matching record? Shouldn't happen, but remember the user now.
         if (empty($existing)) return $this->rememberUser($userID);
 
-        // Update the validator in the database and the cookie
         $validator = bin2hex(random_bytes(20));
 
         $this->userModel->updateRememberValidator($selector, $validator);
 
-        // Save it to the user's browser in a cookie.
         helper('cookie');
         $appConfig = new confCookie();
         delete_cookie(
@@ -335,16 +340,15 @@ class AuthLibrary
             $appConfig->path,
             $appConfig->prefix
         );
-        // Create the cookie
         set_cookie(
-            $this->config->rememberCookie,               // Cookie Name
-            $selector . ':' . $validator, // Value
-            $this->config->rememberLength,  // # Seconds until it expires
+            $this->config->rememberCookie,
+            $selector . ':' . $validator,
+            $this->config->rememberLength,
             $appConfig->domain,
             $appConfig->path,
             $appConfig->prefix,
-            false,                  // Only send over HTTPS?
-            true                  // Hide from Javascript?
+            false,
+            true
         );
     }
 
@@ -352,7 +356,8 @@ class AuthLibrary
     {
         if ((defined('PASSWORD_ARGON2I') && $this->config->hashAlgorithm == PASSWORD_ARGON2I) || (defined('PASSWORD_ARGON2ID') && $this->config->hashAlgorithm == PASSWORD_ARGON2ID))
             $hashOptions = ['memory_cost' => $this->config->hashMemoryCost, 'time_cost' => $this->config->hashTimeCost, 'threads' => $this->config->hashThreads];
-        else $hashOptions = ['cost' => $this->config->hashCost];
+        else
+            $hashOptions = ['cost' => $this->config->hashCost];
 
         $passwordHash = password_hash(
             base64_encode(
@@ -368,13 +373,13 @@ class AuthLibrary
     function randomPassword()
     {
         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-        $pass = array(); //remember to declare $pass as an array
-        $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+        $pass = array();
+        $alphaLength = strlen($alphabet) - 1;
         for ($i = 0; $i < 8; $i++) {
             $n = rand(0, $alphaLength);
             $pass[] = $alphabet[$n];
         }
-        return implode($pass); //turn the array into a string
+        return implode($pass);
     }
 
     public function generateActivateHash()
@@ -382,7 +387,6 @@ class AuthLibrary
         return bin2hex(random_bytes(16));
     }
 
-    /* if return is true user blocked else login active */
     public function isBlockedAttempt($username): bool
     {
         $settings = (object)cache('settings');
@@ -438,7 +442,7 @@ class AuthLibrary
                     $expiry_date = Time::createFromFormat('Y-m-d H:i:s', $this->now->addMinutes((int)$settings->locked->min));
                 else {
                     $countLockedValue = -1;
-                    $expiry_date = Time::createFromFormat('Y-m-d H:i:s', $this->now->addMinutes(1440)); // 24 hours ago
+                    $expiry_date = Time::createFromFormat('Y-m-d H:i:s', $this->now->addMinutes(1440)); // 24 hours
                 }
 
                 $this->commonModel->create('locked', [
@@ -460,30 +464,27 @@ class AuthLibrary
     {
         $parseRange = explode('-', $range);
         if (
-            $this->ipFormatContol($ipAddress, $parseRange[0], $parseRange[1]) && // ipler aynı formattalar mı ?
+            $this->ipFormatContol($ipAddress, $parseRange[0], $parseRange[1]) &&
             $this->ip2long_vX($ipAddress) >= $this->ip2long_vX($parseRange[0]) &&
             $this->ip2long_vX($ipAddress) <= $this->ip2long_vX($parseRange[1])
         )
             return true;
-
-        else return false;
+        else
+            return false;
     }
 
-    /* if all ip's same format is true else false */
-    /** TODO range iplerdein sadece birinin formatına bakılması yeterli */
     public function ipFormatContol($ipAddress, $rangeStart, $rangeEnd): bool
     {
         $ips = array('ipAddress' => $ipAddress, 'rangeStart' => $rangeStart, 'rangeEnd' => $rangeEnd);
+        $ipsFormat = [];
         foreach ($ips as $ip) {
             if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) $ipsFormat[] = 'ip4';
             if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) $ipsFormat[] = 'ip6';
         }
-        /* All array value are same value ? */
         if (count(array_unique($ipsFormat)) === 1) return true;
         else return false;
     }
 
-    /* ip address type convert to integer. */
     public function ip2long_vX($ip)
     {
         $ip_n = inet_pton($ip);

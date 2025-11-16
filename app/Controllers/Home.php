@@ -154,7 +154,7 @@ class Home extends BaseController
         $authorInfo = $userModel->loggedUser(0, 'users.*,auth_groups.name as groupName', ['users.id' => $this->defData['infos']->author]);
 
         if (empty($authorInfo)) {
-            return show_404(); // Or handle gracefully
+            return show_404();
         }
 
         $this->defData['authorInfo'] = $authorInfo[0];
@@ -326,7 +326,7 @@ class Home extends BaseController
         return view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/list', $this->defData);
     }
 
-    // --- Comment-related methods unchanged (already safe) ---
+    // --- Comment-related methods ---
     public function newComment()
     {
         if (!$this->request->isAJAX()) return $this->failForbidden();
@@ -446,5 +446,123 @@ class Home extends BaseController
 
         session()->setFlashdata('cap', $cap->getPhrase());
         return $this->respond(['capIMG' => $cap->inline()], 200);
+    }
+
+    // --- Public Auth: Login & Register (Frontend) ---
+
+    public function register()
+    {
+        $authLib = new \Modules\Auth\Libraries\AuthLibrary();
+        if ($authLib->isLoggedIn()) {
+            return redirect()->to('/');
+        }
+
+        // CAPTCHA
+        $cap = new CaptchaBuilder();
+        $cap->setBackgroundColor(139, 203, 183);
+        $cap->build();
+        session()->setFlashdata('cap', $cap->getPhrase());
+
+        return view('auth/register', array_merge($this->defData, ['cap' => $cap]));
+    }
+
+    public function registerPost()
+    {
+        $authLib = new \Modules\Auth\Libraries\AuthLibrary();
+        if ($authLib->isLoggedIn()) {
+            return redirect()->to('/');
+        }
+
+        $rules = [
+            'firstname' => 'required|min_length[2]',
+            'sirname'   => 'required|min_length[2]',
+            'email'     => 'required|valid_email|is_unique[users.email]',
+            'password'  => 'required|min_length[6]',
+            'captcha'   => 'required'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        // CAPTCHA check
+        $captchaCheck = ($this->request->getPost('captcha') == session()->getFlashdata('cap'));
+        if (ENVIRONMENT !== 'development' && !$captchaCheck) {
+            return redirect()->back()->withInput()->with('error', lang('Auth.badCaptcha') ?: 'Invalid CAPTCHA.');
+        }
+
+        $data = [
+            'firstname'     => $this->request->getPost('firstname'),
+            'sirname'       => $this->request->getPost('sirname'),
+            'email'         => $this->request->getPost('email'),
+            'username'      => null,
+            'password_hash' => $authLib->setPassword($this->request->getPost('password')),
+            'group_id'      => 2,
+            'status'        => 'active',
+            'created_at'    => date('Y-m-d H:i:s'),
+        ];
+
+        if ($this->commonModel->create('users', $data)) {
+            return redirect()->to('/login')->with('message', 'Registration successful!');
+        }
+
+        return redirect()->back()->with('error', 'An error occurred during registration.');
+    }
+
+    public function login()
+    {
+        $authLib = new \Modules\Auth\Libraries\AuthLibrary();
+        if ($authLib->isLoggedIn()) {
+            return redirect()->to('/');
+        }
+
+        // CAPTCHA
+        $cap = new CaptchaBuilder();
+        $cap->setBackgroundColor(139, 203, 183);
+        $cap->build();
+        session()->setFlashdata('cap', $cap->getPhrase());
+
+        return view('auth/login', array_merge($this->defData, ['cap' => $cap]));
+    }
+
+    public function loginPost()
+    {
+        $authLib = new \Modules\Auth\Libraries\AuthLibrary();
+        if ($authLib->isLoggedIn()) {
+            return redirect()->to('/');
+        }
+
+        $rules = [
+            'email'    => 'required|valid_email',
+            'password' => 'required',
+            'captcha'  => 'required'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        // CAPTCHA check
+        $captchaCheck = ($this->request->getPost('captcha') == session()->getFlashdata('cap'));
+        if (ENVIRONMENT !== 'development' && !$captchaCheck) {
+            return redirect()->back()->withInput()->with('error', lang('Auth.badCaptcha') ?: 'Invalid CAPTCHA.');
+        }
+
+        $email = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+        $remember = (bool) $this->request->getPost('remember');
+
+        if ($authLib->attempt(['email' => $email, 'password' => $password], $remember)) {
+            return redirect()->to('/');
+        }
+
+        return redirect()->back()->withInput()->with('error', $authLib->error() ?? 'Invalid credentials.');
+    }
+
+    public function logout()
+    {
+        $authLib = new \Modules\Auth\Libraries\AuthLibrary();
+        $authLib->logout();
+        return redirect()->to('/');
     }
 }

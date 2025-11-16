@@ -133,7 +133,7 @@
 			'cmdforward'   : 'İleri',
 			'cmdgetfile'   : 'Dosyaları seç',
 			'cmdhelp'      : 'Bu yazılım hakkında',
-			'cmdhome'      : 'Anasayfa',
+			'cmdhome'      : 'Home',
 			'cmdinfo'      : 'Bilgi göster',
 			'cmdmkdir'     : 'Yeni klasör',
 			'cmdmkdirin'   : 'Yeni Klasör / aç', // from v2.1.7 added 19.2.2016
@@ -349,7 +349,7 @@
 			'webfm'           : 'Web dosyası yöneticisi',
 			'ver'             : 'Sürüm',
 			'protocolver'     : 'protokol sürümü',
-			'homepage'        : 'Proje Anasayfası',
+			'homepage'        : 'Project home page',
 			'docs'            : 'Belgeler',
 			'github'          : 'Github\'ta bizi takip edin',
 			'twitter'         : 'Twitter\'da bizi takip edin',

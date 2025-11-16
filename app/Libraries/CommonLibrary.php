@@ -115,7 +115,7 @@ class CommonLibrary
         return $part;
     }
 
-    //TODO: çoklu veri işlenmesi için virgül kullanılır hale getirilecek.(,)
+    //TODO: It will be made usable with a comma (,) for processing multiple data.
     /**
      * Undocumented function
      *
@@ -204,12 +204,12 @@ class CommonLibrary
                 return $menu->seflink == $id;
             });
         $current_page = reset($current_page);
-        // Mevcut sayfa veya anasayfa boş ise breadcrumb'ları boş döndürün
+        //If the current page or homepage is empty, return the breadcrumbs as empty.
         if (!$current_page || !$homepage) return array();
 
         $breadcrumbs = [['title' => $homepage->title, 'url' => $homepage->seflink]];
         $tmpCurrentPage = $current_page;
-        // Sayfanın mevcut parent_id'si olana kadar döngüye girin ve breadcrumb'ları diziye ekleyin
+        // Enter a loop until the current page's parent_id is found and add the breadcrumbs to the array.
         while ($tmpCurrentPage->parent) {
             $parent_pages = array_filter((array) $menus, function ($menu) use ($tmpCurrentPage) {
                 return $menu->id == $tmpCurrentPage->parent && $menu->seflink != '/';
@@ -221,7 +221,7 @@ class CommonLibrary
                 $tmpCurrentPage = $parent_page;
             }
         }
-        // Son olarak, mevcut sayfanın bileşenlerini de breadcrumb'lar dizisine ekleyin
+        // Finally, add the components of the current page to the breadcrumbs array
         array_push($breadcrumbs, ['title' => $current_page->title, 'url' => '']);
 
         return $breadcrumbs;

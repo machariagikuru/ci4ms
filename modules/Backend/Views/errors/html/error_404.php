@@ -14,7 +14,7 @@
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="<?= base_url('/backend') ?>">Anasayfa</a></li>
+                    <li class="breadcrumb-item"><a href="<?= base_url('/backend') ?>">Homepage</a></li>
                     <li class="breadcrumb-item active">404 - File Not Found</li>
                 </ol>
             </div>
