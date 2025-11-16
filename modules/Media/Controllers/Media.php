@@ -41,7 +41,8 @@ class Media extends \Modules\Backend\Controllers\BaseController
                     'uploadAllow' => (array)$allowedFiles, // Mimetype `image` and `text/plain` allowed to upload
                     'uploadOrder' => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
                     'accessControl' => array($this, 'elfinderAccess'), // disable and hide dot starting files (OPTIONAL)
-                    'dirrm' => true
+                    'dirrm' => true,
+                    'getFileCallback' => null, // ← Prevents "top.elfinder_callback is not a function" in standalone mode
                 ),
                 // Trash volume
                 array(
@@ -53,7 +54,7 @@ class Media extends \Modules\Backend\Controllers\BaseController
                     'uploadDeny' => array('all'),                // Recomend the same settings as the original volume that uses the trash
                     'uploadAllow' => (array)$allowedFiles, // Same as above
                     'uploadOrder' => array('deny', 'allow'),      // Same as above
-                    'accessControl' => array($this, 'elfinderAccess')                   // Same as above
+                    'accessControl' => array($this, 'elfinderAccess') // Same as above
                 )
             ),
             'bind' => array(
@@ -83,7 +84,7 @@ class Media extends \Modules\Backend\Controllers\BaseController
     {
         $basename = basename($path);
         return $basename[0] === '.'                  // if file/folder begins with '.' (dot)
-            && strlen($relpath) !== 1           // but with out volume root
+            && strlen($relpath) !== 1           // but without volume root
             ? !($attr == 'read' || $attr == 'write') // set read+write to false, other (locked+hidden) set to true
             :  null;                                 // else elFinder decide it itself
     }

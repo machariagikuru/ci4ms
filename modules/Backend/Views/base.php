@@ -60,7 +60,7 @@
                 </div>
                 <div class="collapse mb-2 border-bottom" id="collapseExample">
                     <div class="card card-body">
-                        <span><i class="fas fa-user"></i> <a class="link-black" href="<?= route_to('profile') ?>">Profil</a></span>
+                        <span><i class="fas fa-user"></i> <a class="link-black" href="<?= route_to('profile') ?>">Profile</a></span>
                         <div class="dropdown-divider"></div>
                         <span><i class="fas fa-sign-out-alt"></i> <a class="link-black"
                                 href="<?= route_to('logout') ?>">Log Out</a></span>

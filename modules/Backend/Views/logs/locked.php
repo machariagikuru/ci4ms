@@ -65,7 +65,7 @@ use CodeIgniter\I18n\Time;
                 </div>
 
                 <div class="form-group col-md-6">
-                    <label>Zaman Aralığı</label>
+                    <label>Time Interval</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="far fa-clock"></i></span>
