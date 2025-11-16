@@ -4,7 +4,6 @@ namespace Modules\Auth\Controllers;
 
 use App\Libraries\CommonLibrary;
 use CodeIgniter\I18n\Time;
-use Gregwar\Captcha\CaptchaBuilder;
 use Modules\Backend\Models\UserModel;
 
 class AuthController extends BaseController
@@ -16,6 +15,16 @@ class AuthController extends BaseController
         $this->userModel = new UserModel();
     }
 
+    // --- Helper: Generate arithmetic CAPTCHA ---
+    protected function generateMathCaptcha()
+    {
+        $num1 = random_int(1, 10);
+        $num2 = random_int(1, 10);
+        $answer = $num1 + $num2;
+        session()->set('admin_math_captcha_answer', $answer);
+        return "$num1 + $num2";
+    }
+
     public function login()
     {
         if ($this->request->is('post')) {
@@ -25,38 +34,42 @@ class AuthController extends BaseController
                 'captcha' => 'required'
             ];
 
-            if (!$this->validate($rules)) return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-
-            $captchaCheck = ($this->request->getPost('captcha') == $this->session->getFlashdata('cap')) ? true : false;
-            if (ENVIRONMENT === 'development') $captchaCheck = true;
-
-            if ($captchaCheck === true) {
-                $login = $this->request->getPost('email');
-                $password = $this->request->getPost('password');
-                $remember = (bool)$this->request->getPost('remember');
-
-                // Check is blocked ip
-                if ($this->authLib->isBlockedAttempt($login)) return redirect()->back()->withInput()->with('error', $this->authLib->error() ?? lang('Auth.loginBlock'));
-
-                // Try to log them in...
-                if (!$this->authLib->attempt(['email' => $login, 'password' => $password], $remember)) return redirect()->back()->withInput()->with('error', $this->authLib->error() ?? lang('Auth.badAttempt'));
-                $redirectURL = session('redirect_url') ?? redirect()->route('logout');
-                unset($_SESSION['redirect_url']);
-                return redirect()->route($redirectURL)->withCookies()->with('message', lang('Auth.loginSuccess'));
+            if (!$this->validate($rules)) {
+                return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
-            return redirect()->route('login')->withInput()->with('error', $this->authLib->error() ?? lang('Auth.badCaptcha'));
+
+            // ✅ STRICT CAPTCHA VALIDATION (no environment bypass)
+            $userAnswer = (int) $this->request->getPost('captcha');
+            $correctAnswer = (int) session()->get('admin_math_captcha_answer');
+
+            if ($userAnswer !== $correctAnswer) {
+                // Regenerate CAPTCHA on failure
+                session()->remove('admin_math_captcha_answer');
+                return redirect()->back()->withInput()->with('error', lang('Auth.badCaptcha') ?: 'Incorrect CAPTCHA answer.');
+            }
+
+            $login = $this->request->getPost('email');
+            $password = $this->request->getPost('password');
+            $remember = (bool) $this->request->getPost('remember');
+
+            if ($this->authLib->isBlockedAttempt($login)) {
+                return redirect()->back()->withInput()->with('error', $this->authLib->error() ?? lang('Auth.loginBlock'));
+            }
+
+            if (!$this->authLib->attempt(['email' => $login, 'password' => $password], $remember)) {
+                return redirect()->back()->withInput()->with('error', $this->authLib->error() ?? lang('Auth.badAttempt'));
+            }
+
+            // Clear CAPTCHA after success
+            session()->remove('admin_math_captcha_answer');
+            $redirectURL = session('redirect_url') ?? 'backend';
+            unset($_SESSION['redirect_url']);
+
+            return redirect()->route($redirectURL)->withCookies()->with('message', lang('Auth.loginSuccess'));
         }
-        $cap = new CaptchaBuilder();
-        $cap->setBackgroundColor(139, 203, 183);
-        $cap->setIgnoreAllEffects(false);
-        $cap->setMaxFrontLines(0);
-        $cap->setMaxBehindLines(0);
-        $cap->setMaxAngle(1);
-        $cap->setTextColor(18, 58, 73);
-        $cap->setLineColor(18, 58, 73);
-        $cap->build();
-        $this->session->setFlashdata('cap', $cap->getPhrase());
-        return view('Modules\Auth\Views\login', ['config' => $this->config, 'cap' => $cap]);
+
+        $mathCaptcha = $this->generateMathCaptcha();
+        return view('Modules\Auth\Views\login', ['config' => $this->config, 'mathCaptcha' => $mathCaptcha]);
     }
 
     /**
@@ -64,31 +77,31 @@ class AuthController extends BaseController
      */
     public function logout()
     {
-        if ($this->authLib->check()) $this->authLib->logout();
+        if ($this->authLib->check()) {
+            $this->authLib->logout();
+        }
         return redirect()->route('login');
     }
 
-    /**
-     * Displays the forgot password form.
-     */
+    // --- Password reset & activation (unchanged) ---
     public function forgotPassword()
     {
         if ($this->request->is('post')) {
             helper('debug');
-            $rules = [
-                'email' => 'required|valid_email'
-            ];
+            $rules = ['email' => 'required|valid_email'];
             if (!$this->validate($rules)) return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
 
             if ($this->config->activeResetter === false) return redirect()->route('login')->with('error', lang('Auth.forgotDisabled'));
 
             $user = $this->commonModel->selectOne('users', ['email' => $this->request->getPost('email')]);
-
             if (is_null($user)) return redirect()->back()->with('error', lang('Auth.forgotNoUser'));
 
-            // Save the reset hash /
-            $this->commonModel->edit('users', ['reset_hash' => $this->authLib->generateActivateHash(), 'reset_expires' => date('Y-m-d H:i:s', time() + $this->config->resetTime)], ['id' => $user->_id]);
-            $user = $this->commonModel->selectOne('users', ['id' => $user->_id]);
+            $this->commonModel->edit('users', [
+                'reset_hash' => $this->authLib->generateActivateHash(),
+                'reset_expires' => date('Y-m-d H:i:s', time() + $this->config->resetTime)
+            ], ['id' => $user->id]);
+
+            $user = $this->commonModel->selectOne('users', ['id' => $user->id]);
             $commonLibrary = new CommonLibrary();
             $mailResult = $commonLibrary->phpMailer(
                 'noreply@' . $_SERVER['HTTP_HOST'],
@@ -97,36 +110,35 @@ class AuthController extends BaseController
                 'noreply@' . $_SERVER['HTTP_HOST'],
                 'Information',
                 lang('Auth.membershipPasswordReset'),
-                lang('passwordResetMessage',[date('d-m-Y H:i:s', strtotime($user->reset_expires)),site_url('backend/reset-password/' . $user->reset_hash)])
+                lang('passwordResetMessage', [date('d-m-Y H:i:s', strtotime($user->reset_expires)), site_url('backend/reset-password/' . $user->reset_hash)])
             );
-            if ($mailResult === true) return redirect()->route('login')->with('message', lang('Auth.forgotEmailSent'));
-            else return redirect()->back()->withInput()->with('error', $mailResult ?? lang('Auth.unknownError'));
+
+            if ($mailResult === true) {
+                return redirect()->route('login')->with('message', lang('Auth.forgotEmailSent'));
+            } else {
+                return redirect()->back()->withInput()->with('error', $mailResult ?? lang('Auth.unknownError'));
+            }
         }
-        if ($this->config->activeResetter === false)
+
+        if ($this->config->activeResetter === false) {
             return redirect()->route('login')->with('error', lang('Auth.forgotDisabled'));
+        }
 
         return view($this->config->views['forgot'], ['config' => $this->config]);
     }
 
-    /**
-     * Displays the Reset Password form.
-     */
     public function resetPassword($token)
     {
         if ($this->request->is('post')) {
             if ($this->config->activeResetter === false) return redirect()->route('login')->with('error', lang('Auth.forgotDisabled'));
 
-            // First things first - log the reset attempt.
-            $this->commonModel->create(
-                'auth_reset_password_attempts',
-                [
-                    'email' => $this->request->getPost('email'),
-                    'ip_address' => $this->request->getIPAddress(),
-                    'user_agent' => (string)$this->request->getUserAgent(),
-                    'token' => $token,
-                    'created_at' => date('Y-m-d H:i:s')
-                ]
-            );
+            $this->commonModel->create('auth_reset_password_attempts', [
+                'email' => $this->request->getPost('email'),
+                'ip_address' => $this->request->getIPAddress(),
+                'user_agent' => (string)$this->request->getUserAgent(),
+                'token' => $token,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
 
             $rules = [
                 'email' => 'required|valid_email',
@@ -139,11 +151,11 @@ class AuthController extends BaseController
             $user = $this->commonModel->selectOne('users', ['email' => $this->request->getPost('email'), 'reset_hash' => $token]);
             if (is_null($user)) return redirect()->back()->with('error', lang('Auth.forgotNoUser'));
 
-            // Reset token still valid?
             $time = Time::parse($user->reset_expires);
-            if (!empty($user->reset_expires) && time() > $time->getTimestamp()) return redirect()->back()->withInput()->with('error', lang('Auth.resetTokenExpired'));
+            if (!empty($user->reset_expires) && time() > $time->getTimestamp()) {
+                return redirect()->back()->withInput()->with('error', lang('Auth.resetTokenExpired'));
+            }
 
-            // Success! Save the new password, and cleanup the reset hash.
             $this->commonModel->edit('users', [
                 'password_hash' => $this->authLib->setPassword($this->request->getPost('password')),
                 'reset_hash' => null,
@@ -154,61 +166,49 @@ class AuthController extends BaseController
 
             return redirect()->route('login')->with('message', lang('Auth.resetSuccess'));
         }
+
         if ($this->config->activeResetter === false) return redirect()->route('login')->with('error', lang('Auth.forgotDisabled'));
 
         return view($this->config->views['reset'], ['config' => $this->config, 'token' => $token]);
     }
 
-    /**
-     * Activate account.
-     *
-     * @return mixed
-     */
     public function activateAccount($token)
     {
-        // First things first - log the activation attempt.
-        $this->commonModel->create(
-            'auth_email_activation_attempts',
-            [
-                'ip_address' => $this->request->getIPAddress(),
-                'user_agent' => (string)$this->request->getUserAgent(),
-                'token' => $token,
-                'created_at' => date('Y-m-d H:i:s')
-            ]
-        );
+        $this->commonModel->create('auth_email_activation_attempts', [
+            'ip_address' => $this->request->getIPAddress(),
+            'user_agent' => (string)$this->request->getUserAgent(),
+            'token' => $token,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
 
         $throttler = service('throttler');
-
-        if ($throttler->check($this->request->getIPAddress(), 2, MINUTE) === false) return $this->response->setStatusCode(429)->setBody(lang('Auth.tooManyRequests', [$throttler->getTokentime()]));
+        if ($throttler->check($this->request->getIPAddress(), 2, MINUTE) === false) {
+            return $this->response->setStatusCode(429)->setBody(lang('Auth.tooManyRequests', [$throttler->getTokentime()]));
+        }
 
         $user = $this->commonModel->selectOne('users', ['activate_hash' => $token, 'status' => 'deactive']);
-
         if (is_null($user)) return redirect()->route('login')->with('error', lang('Auth.activationNoUser'));
 
-        $this->commonModel->edit('users',  ['status' => 'active', 'activate_hash' => null], ['id' => $user->id]);
+        $this->commonModel->edit('users', ['status' => 'active', 'activate_hash' => null], ['id' => $user->id]);
 
         return redirect()->route('login')->with('message', lang('Auth.registerSuccess'));
     }
 
     public function activateEmail($token)
     {
-        // First things first - log the activation attempt.
-        $this->commonModel->createOne(
-            'auth_email_activation_attempts',
-            [
-                'ip_address' => $this->request->getIPAddress(),
-                'user_agent' => (string)$this->request->getUserAgent(),
-                'token' => $token,
-                'created_at' => date('Y-m-d H:i:s')
-            ]
-        );
+        $this->commonModel->createOne('auth_email_activation_attempts', [
+            'ip_address' => $this->request->getIPAddress(),
+            'user_agent' => (string)$this->request->getUserAgent(),
+            'token' => $token,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
 
         $throttler = service('throttler');
-
-        if ($throttler->check($this->request->getIPAddress(), 2, MINUTE) === false) return $this->response->setStatusCode(429)->setBody(lang('Auth.tooManyRequests', [$throttler->getTokentime()]));
+        if ($throttler->check($this->request->getIPAddress(), 2, MINUTE) === false) {
+            return $this->response->setStatusCode(429)->setBody(lang('Auth.tooManyRequests', [$throttler->getTokentime()]));
+        }
 
         $user = $this->commonModel->selectOne('users', ['activate_hash' => $token, 'status' => 'deactive']);
-
         if (is_null($user)) return redirect()->route('login')->with('error', lang('Auth.activationNoUser'));
 
         $this->commonModel->edit('users', ['status' => 'active', 'activate_hash' => null], ['id' => $user->id]);
