@@ -52,11 +52,11 @@ class UserController extends \Modules\Backend\Controllers\BaseController
     {
         if ($this->request->is('post')) {
             $valData = ([
-                'firstname' => ['label' => 'Ad Soyadı', 'rules' => 'required'],
-                'surname' => ['label' => 'Ad Soyadı', 'rules' => 'required'],
-                'email' => ['label' => 'E-posta adresi', 'rules' => 'required|valid_email'],
-                'group' => ['label' => 'Yetkisi', 'rules' => 'required'],
-                'password' => ['label' => 'Şifre', 'rules' => 'required|min_length[8]']
+                'firstname' => ['label' => 'Full Name', 'rules' => 'required'],
+                'surname' => ['label' => 'Full Name', 'rules' => 'required'],
+                'email' => ['label' => 'Email Address', 'rules' => 'required|valid_email'],
+                'group' => ['label' => 'Permission', 'rules' => 'required'],
+                'password' => ['label' => 'Password', 'rules' => 'required|min_length[8]']
             ]);
 
             if ($this->validate($valData) == false) return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
@@ -115,8 +115,8 @@ class UserController extends \Modules\Backend\Controllers\BaseController
                 [['mail' => $this->request->getPost('email')]],
                 'noreply@' . $_SERVER['HTTP_HOST'],
                 'Information',
-                'Üyelik Aktivasyonu',
-                'Üyeliğiniz şirket yetkilisi tarafından oluşturuldu. Üyeliğinizi aktif etmek için lütfen <a href="' . site_url('backend/activate-account/' . $data['activate_hash']) . '"><b>buraya</b></a> tıklayınız. Tıkladıktan sonra sizinle paylaşılan <b>email</b> ve <b>şifre</b> ile giriş yapabilirsiniz.<br>E-mail adresi : ' . $this->request->getPost('email') . '<br>Şifreniz : ' . $this->request->getPost('password')
+                'Membership Activation',
+                'Your membership has been created by the company administrator. To activate your membership, please <a href="' . site_url('backend/activate-account/' . $data['activate_hash']) . '"><b>Click Here</b></a> to access the link shared with you <b>email</b> ve <b>password</b> You can log in with <br>E-mail adress : ' . $this->request->getPost('email') . '<br>Your password: ' . $this->request->getPost('password')
             );
             if ($mailResult === true) return redirect()->route('users', [1])->with('message', lang('Auth.activationSuccess'));
             else return redirect()->back()->withInput()->with('error', $mailResult);
@@ -134,13 +134,13 @@ class UserController extends \Modules\Backend\Controllers\BaseController
     {
         if ($this->request->is('post')) {
             $valData = ([
-                'firstname' => ['label' => 'Ad Soyadı', 'rules' => 'required'],
-                'surname' => ['label' => 'Ad Soyadı', 'rules' => 'required'],
-                'email' => ['label' => 'E-posta adresi', 'rules' => 'required|valid_email'],
-                'group' => ['label' => 'Yetkisi', 'rules' => 'required']
+                'firstname' => ['label' => 'Full Name', 'rules' => 'required'],
+                'surname' => ['label' => 'Full Name', 'rules' => 'required'],
+                'email' => ['label' => 'Email Address', 'rules' => 'required|valid_email'],
+                'group' => ['label' => 'Permission', 'rules' => 'required']
             ]);
 
-            if ($this->request->getPost('password')) $valData['password'] = ['label' => 'Şifre', 'rules' => 'required|min_length[8]'];
+            if ($this->request->getPost('password')) $valData['password'] = ['label' => 'Password', 'rules' => 'required|min_length[8]'];
 
             if ($this->validate($valData) == false) return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
 
@@ -157,8 +157,8 @@ class UserController extends \Modules\Backend\Controllers\BaseController
             if ($this->request->getPost('password')) $data['password_hash'] = $this->authLib->setPassword($this->request->getPost('password'));
 
             $result = (string)$this->commonModel->edit('users', $data, ['id' => $id]);
-            if ((bool)$result == false) return redirect()->back()->withInput()->with('error', 'Kullanıcı oluşturulamadı.');
-            else return redirect()->route('users', [1])->with('message', 'Üyelik Güncellendi.');
+            if ((bool)$result == false) return redirect()->back()->withInput()->with('error', 'User could not be created.');
+            else return redirect()->route('users', [1])->with('message', 'Membership Updated.');
         }
         $this->defData['groups'] = $this->commonModel->lists('auth_groups');
         $this->defData['authLib'] = $this->authLib;
@@ -171,8 +171,9 @@ class UserController extends \Modules\Backend\Controllers\BaseController
      */
     public function user_del(string $id)
     {
-        if ($this->commonModel->edit('users', ['deleted_at' => date('Y-m-d H:i:s'), 'status' => 'deleted'], ['id' => $id]) === true) return redirect()->route('users', [1])->with('message', 'Üyelik Silindi.');
-        return redirect()->route('users', [1])->with('error', 'Üyelik Silinemedi.');
+        if ($this->commonModel->edit('users', ['deleted_at' => date('Y-m-d H:i:s'), 'status' => 'deleted'], ['id' => $id]) === true) return redirect()->route('users', [1])->with('message', 'Membership Deleted.');
+        else
+        return redirect()->route('users', [1])->with('error', 'Membership could not be deleted.');
     }
 
     /**
@@ -182,9 +183,9 @@ class UserController extends \Modules\Backend\Controllers\BaseController
     {
         if ($this->request->is('post')) {
             $valData = ([
-                'firstname' => ['label' => 'Ad Soyadı', 'rules' => 'required'],
-                'surname' => ['label' => 'Ad Soyadı', 'rules' => 'required'],
-                'email' => ['label' => 'E-posta adresi', 'rules' => 'required|valid_email'],
+                'firstname' => ['label' => 'Full Name', 'rules' => 'required'],
+                'surname' => ['label' => 'Full Name', 'rules' => 'required'],
+                'email' => ['label' => 'Email Address', 'rules' => 'required|valid_email'],
             ]);
 
             if ($this->request->getPost('password')) $valData['password'] = ['label' => 'Şifre', 'rules' => 'required|min_length[8]'];
@@ -202,7 +203,7 @@ class UserController extends \Modules\Backend\Controllers\BaseController
             if ($this->request->getPost('password')) $data['password_hash'] = $this->authLib->setPassword($this->request->getPost('password'));
 
             if ($user->email != $data['email']) {
-                if ($this->commonModel->isHave('users', ['id!=' => $user->id, 'email' => $this->request->getPost('email')]) === 1) return redirect()->back()->withInput()->with('error', 'Daha önce bu mail adresi başka bir kullanıcı tarafından alınmıştır lütfen bilgilerinizi kontrol ediniz.');
+                if ($this->commonModel->isHave('users', ['id!=' => $user->id, 'email' => $this->request->getPost('email')]) === 1) return redirect()->back()->withInput()->with('error', 'This email address has already been used by another user. Please check your information.');
 
                 $data['activate_hash'] = $this->authLib->generateActivateHash();
                 $data['status'] = 'deactive';
@@ -217,16 +218,16 @@ class UserController extends \Modules\Backend\Controllers\BaseController
                         ['mail' => $this->request->getPost('email')],
                         'noreply@' . $_SERVER['HTTP_HOST'],
                         'Information',
-                        'Mail Aktivasyonu',
-                        'Mail adresiniz tarafınızdan güncellenmiştir. Lütfen <a href="' . site_url('backend/activate-email/' . $data['activate_hash']) . '"><b>buraya</b></a> tıklayınız.'
+                        'Email Activation',
+                        'You have updated your email. Please <a href="' . site_url('backend/activate-email/' . $data['activate_hash']) . '"><b>Click here</b></a> to activate your new email address.'
                     );
-                    if ($mailResult === true) return redirect()->route('users', [1])->with('message', 'Üyelik oluşturuldu. Aktiflik maili gönderildi.');
+                    if ($mailResult === true) return redirect()->route('users', [1])->with('message', 'Please activate your new email address.');
                     else return redirect()->back()->withInput()->with('error', $mailResult);
                 }
             } else $result = $this->commonModel->edit('users', $data, ['id' => session()->get('logged_in')]);
 
-            if ((bool)$result == false) return redirect()->back()->withInput()->with('error', 'Profil Güncellenemedi.');
-            else return redirect()->back()->withInput()->with('message', 'Profil Güncellendi.');
+            if ((bool)$result == false) return redirect()->back()->withInput()->with('error', 'Profile could not be updated.');
+            else return redirect()->back()->withInput()->with('message', 'Profile Updated.');
         }
         $this->defData['user'] = $this->commonModel->selectOne('users', ['id' => session()->get('logged_in')], 'email,firstname,surname');
         return view('Modules\Users\Views\usersCrud\profile', $this->defData);
@@ -238,14 +239,14 @@ class UserController extends \Modules\Backend\Controllers\BaseController
     public function ajax_blackList_post()
     {
         if ($this->request->isAJAX()) {
-            $valData = (['note' => ['label' => 'Note', 'rules' => 'required'], 'uid' => ['label' => 'Kullanıcı id', 'rules' => 'required']]);
+            $valData = (['note' => ['label' => 'Note', 'rules' => 'required'], 'uid' => ['label' => 'User ID', 'rules' => 'required']]);
             if ($this->validate($valData) == false) return $this->validator->getErrors();
             $result = [];
             if ($this->commonModel->isHave('black_list_users', ['blacked_id' => $this->request->getPost('uid')]) === 0) $bid = $this->commonModel->create('black_list_users', ['blacked_id' => $this->request->getPost('uid'), 'who_blacklisted' => session()->get('logged_in'), 'notes' => $this->request->getPost('note'), 'created_at' => new Time('now')]);
-            else $result = ['result' => true, 'error' => ['type' => 'warning', 'message' => 'üyelik karalisteye daha önce eklendi.']];
+            else $result = ['result' => true, 'error' => ['type' => 'warning', 'message' => 'The membership has already been added to the blacklist.']];
 
-            if (!empty($bid) && $this->commonModel->edit('users', ['status' => 'banned', 'statusMessage' => $this->request->getPost('note')], ['id' => $this->request->getPost('uid')])) $result = ['result' => true, 'error' => ['type' => 'success', 'message' => 'üyelik karalisteye eklendi.']];
-            else $result = ['result' => true, 'error' => ['type' => 'danger', 'message' => 'üyelik karalisteye eklenemedi.']];
+            if (!empty($bid) && $this->commonModel->edit('users', ['status' => 'banned', 'statusMessage' => $this->request->getPost('note')], ['id' => $this->request->getPost('uid')])) $result = ['result' => true, 'error' => ['type' => 'success', 'message' => 'The membership has been added to the blacklist']];
+            else $result = ['result' => true, 'error' => ['type' => 'danger', 'message' => 'Membership could not be added to the blacklist.']];
 
             return $this->respond($result, 200);
         } else return $this->failForbidden();
@@ -277,12 +278,12 @@ class UserController extends \Modules\Backend\Controllers\BaseController
                     ['mail' => $user->email],
                     'noreply@' . $_SERVER['HTTP_HOST'],
                     'Information',
-                    'Mail Aktivasyonu',
-                    'Üyeliğinizi yeniden aktif edebilimeniz için şirket yetkilisi müdehale etti. Üyeliğinizi aktif etmek için lütfen <a href="' . site_url('backend/activate-account/' . $data['activate_hash']) . '"><b>buraya</b></a> tıklayınız. Tıkladıktan sonra sizinle paylaşılan <b>email</b> ve <b>şifre</b> ile giriş yapabilirsiniz.<br>E-mail adresi : ' . $user->email . '<br>Şifreniz : ' . $pwd
+                    'Membership Reactivation',
+                    'To reactivate your membership, the administrator has intervened. To activate your membership, please <a href="' . site_url('backend/activate-account/' . $data['activate_hash']) . '"><b>Click Here</b></a> to access the link shared with you <b>email</b> ve <b>Password</b> to log in <br>E-mail adresi : ' . $user->email . '<br>Password : ' . $pwd
                 );
-                if ($mailResult === true) $result = ['result' => true, 'error' => ['type' => 'success', 'message' => $user->email . ' e-mail adresli üyelik karalisteden çıkarıldı.']];
+                if ($mailResult === true) $result = ['result' => true, 'error' => ['type' => 'success', 'message' => $user->email . ' TheUser with the email address has been removed from the blacklist.']];
                 else $result = ['result' => false, 'error' => ['type' => 'danger', 'message' => $mailResult]];
-            } else $result = ['result' => false, 'error' => ['type' => 'danger', 'message' => 'üyelik karalisteden çıkarılamadı.']];
+            } else $result = ['result' => false, 'error' => ['type' => 'danger', 'message' => 'Membership could not be removed from the blacklist.']];
 
             return $this->response->setJSON($result);
         } else return $this->failForbidden();
@@ -291,7 +292,7 @@ class UserController extends \Modules\Backend\Controllers\BaseController
     public function ajax_force_reset_password()
     {
         if ($this->request->isAJAX()) {
-            $valData = (['uid' => ['label' => 'Kullanıcı id', 'rules' => 'required']]);
+            $valData = (['uid' => ['label' => 'User id', 'rules' => 'required']]);
 
             if ($this->validate($valData) == false) return $this->validator->getErrors();
 
@@ -306,12 +307,12 @@ class UserController extends \Modules\Backend\Controllers\BaseController
                     ['mail' => $user->email],
                     'noreply@' . $_SERVER['HTTP_HOST'],
                     'Information',
-                    'Üyelik Şifre Sıfırlama',
-                    'Üyeliğinizin şifre sıfırlaması yetkili gerçekleştirildi. Şifre yenileme isteğiniz ' . date('d-m-Y H:i:s', strtotime($user->reset_expires)) . ' tarihine kadar geçerlidir. Lütfen yeni şifrenizi belirlemek için <a href="' . site_url('backend/reset-password/' . $user->reset_hash) . '"><b>buraya</b></a> tıklayınız.'
+                    'Password Reset Request',
+                    'Your membership password has been reset by an authorized person. Your password reset request ' . date('d-m-Y H:i:s', strtotime($user->reset_expires)) . ' is valid until the date. Please set your new password by <a href="' . site_url('backend/reset-password/' . $user->reset_hash) . '"><b>Click here </b></a> to access the link shared with you.'
                 );
-                if ($mailResult === true) $result = ['result' => true, 'error' => ['type' => 'success', 'message' => $user->email . ' e-posta adresli kullanıcıya şifre yenileme maili atıldı.']];
+                if ($mailResult === true) $result = ['result' => true, 'error' => ['type' => 'success', 'message' => $user->email . ' The password reset request has been sent to the email address.']];
                 else $result = ['result' => false, 'error' => ['type' => 'danger', 'message' => $mailResult]];
-            } else $result = ['result' => false, 'error' => ['type' => 'danger', 'message' => 'Şifre sıfırlama isteği gerçekleştirilemedi.']];
+            } else $result = ['result' => false, 'error' => ['type' => 'danger', 'message' => 'Password reset request could not be sent.']];
 
             return $this->response->setJSON($result);
         } else return $this->failForbidden();
