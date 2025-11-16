@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Libraries\CommonLibrary;
 use App\Models\Ci4ms;
 use CodeIgniter\I18n\Time;
-use Gregwar\Captcha\CaptchaBuilder;
 use Modules\Backend\Models\AjaxModel;
 use Modules\Users\Models\UserscrudModel;
 
@@ -20,6 +19,18 @@ class Home extends BaseController
         $this->ci4msModel = new Ci4ms();
     }
 
+    // --- Helper: Generate arithmetic CAPTCHA ---
+    protected function generateMathCaptcha()
+    {
+        $num1 = random_int(1, 10);
+        $num2 = random_int(1, 10);
+        $answer = $num1 + $num2;
+        // ✅ Use regular session (not flashdata) so it survives form POST
+        session()->set('math_captcha_answer', $answer);
+        return "$num1 + $num2";
+    }
+
+    // --- Public Pages ---
     public function index(string $seflink = '/')
     {
         $page = $this->commonModel->selectOne('pages', ['seflink' => $seflink]);
@@ -27,19 +38,14 @@ class Home extends BaseController
             $this->defData['pageInfo'] = $page;
             $this->defData['pageInfo']->content = $this->commonLibrary->parseInTextFunctions($this->defData['pageInfo']->content);
 
-            // Safely decode SEO
             $seo = !empty($page->seo) ? json_decode($page->seo, false) : (object) [];
-            if (!is_object($seo)) {
-                $seo = (object) [];
-            }
+            if (!is_object($seo)) $seo = (object) [];
             $this->defData['pageInfo']->seo = $seo;
 
             $keywords = [];
             if (!empty($seo->keywords) && is_array($seo->keywords)) {
                 foreach ($seo->keywords as $keyword) {
-                    if (isset($keyword->value)) {
-                        $keywords[] = $keyword->value;
-                    }
+                    if (isset($keyword->value)) $keywords[] = $keyword->value;
                 }
             }
 
@@ -87,6 +93,7 @@ class Home extends BaseController
         return view('maintenance', $this->defData);
     }
 
+    // --- Blog ---
     public function blog()
     {
         $this->defData['seo'] = $this->ci4msseoLibrary->metaTags('Blog', 'blog listesi', 'blog', ['keywords' => ['blog listesi']]);
@@ -142,24 +149,16 @@ class Home extends BaseController
         }
 
         $this->defData['infos'] = $this->commonModel->selectOne('blog', ['seflink' => $seflink]);
-
-        // Safely decode SEO
         $seo = !empty($this->defData['infos']->seo) ? json_decode($this->defData['infos']->seo, false) : (object) [];
-        if (!is_object($seo)) {
-            $seo = (object) [];
-        }
+        if (!is_object($seo)) $seo = (object) [];
         $this->defData['infos']->seo = $seo;
 
         $userModel = new UserscrudModel();
         $authorInfo = $userModel->loggedUser(0, 'users.*,auth_groups.name as groupName', ['users.id' => $this->defData['infos']->author]);
-
-        if (empty($authorInfo)) {
-            return show_404();
-        }
+        if (empty($authorInfo)) return show_404();
 
         $this->defData['authorInfo'] = $authorInfo[0];
         $this->defData['dateI18n'] = new Time();
-
         $modelTag = new AjaxModel();
         $this->defData['tags'] = $modelTag->limitTags_ajax(['piv_id' => $this->defData['infos']->id]);
 
@@ -174,10 +173,8 @@ class Home extends BaseController
 
         $this->defData['comments'] = $this->commonModel->lists('comments', '*', ['blog_id' => $this->defData['infos']->id], 'id ASC', 5);
 
-        // Safely extract SEO fields
         $description = $seo->description ?? '';
         $coverImage = $seo->coverImage ?? '';
-
         $authorName = ($this->defData['authorInfo']->firstname ?? '') . ' ' . ($this->defData['authorInfo']->sirname ?? '');
 
         $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
@@ -189,7 +186,6 @@ class Home extends BaseController
         );
 
         $this->defData['categories'] = $this->commonModel->lists('categories');
-
         $this->defData['schema'] = $this->ci4msseoLibrary->ldPlusJson('BlogPosting', [
             'url' => site_url(implode('/', $this->request->getUri()->getSegments())),
             'logo' => $this->defData['settings']->logo ?? '',
@@ -216,9 +212,7 @@ class Home extends BaseController
 
     public function tagList(string $seflink)
     {
-        if ($this->commonModel->isHave('tags', ['seflink' => $seflink]) !== 1) {
-            return show_404();
-        }
+        if ($this->commonModel->isHave('tags', ['seflink' => $seflink]) !== 1) return show_404();
 
         $perPage = 12;
         $page = (int) $this->request->getUri()->getSegment(3, 1);
@@ -253,22 +247,16 @@ class Home extends BaseController
     public function category(string $seflink)
     {
         $this->defData['category'] = $this->commonModel->selectOne('categories', ['seflink' => $seflink]);
-        if (empty($this->defData['category'])) {
-            return show_404();
-        }
+        if (empty($this->defData['category'])) return show_404();
 
         $seo = !empty($this->defData['category']->seo) ? json_decode($this->defData['category']->seo, false) : (object) [];
-        if (!is_object($seo)) {
-            $seo = (object) [];
-        }
+        if (!is_object($seo)) $seo = (object) [];
         $this->defData['category']->seo = $seo;
 
         $keywords = [];
         if (!empty($seo->keywords) && is_array($seo->keywords)) {
             foreach ($seo->keywords as $keyword) {
-                if (isset($keyword->value)) {
-                    $keywords[] = $keyword->value;
-                }
+                if (isset($keyword->value)) $keywords[] = $keyword->value;
             }
         }
 
@@ -326,7 +314,7 @@ class Home extends BaseController
         return view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/list', $this->defData);
     }
 
-    // --- Comment-related methods ---
+    // --- Comments (AJAX) ---
     public function newComment()
     {
         if (!$this->request->isAJAX()) return $this->failForbidden();
@@ -434,7 +422,7 @@ class Home extends BaseController
     {
         if (!$this->request->isAJAX()) return $this->failForbidden();
 
-        $cap = new CaptchaBuilder();
+        $cap = new \Gregwar\Captcha\CaptchaBuilder();
         $cap->setBackgroundColor(139, 203, 183);
         $cap->setIgnoreAllEffects(false);
         $cap->setMaxFrontLines(0);
@@ -457,13 +445,8 @@ class Home extends BaseController
             return redirect()->to('/');
         }
 
-        // CAPTCHA
-        $cap = new CaptchaBuilder();
-        $cap->setBackgroundColor(139, 203, 183);
-        $cap->build();
-        session()->setFlashdata('cap', $cap->getPhrase());
-
-        return view('auth/register', array_merge($this->defData, ['cap' => $cap]));
+        $mathCaptcha = $this->generateMathCaptcha();
+        return view('auth/register', array_merge($this->defData, ['mathCaptcha' => $mathCaptcha]));
     }
 
     public function registerPost()
@@ -485,10 +468,11 @@ class Home extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // CAPTCHA check
-        $captchaCheck = ($this->request->getPost('captcha') == session()->getFlashdata('cap'));
-        if (ENVIRONMENT !== 'development' && !$captchaCheck) {
-            return redirect()->back()->withInput()->with('error', lang('Auth.badCaptcha') ?: 'Invalid CAPTCHA.');
+        // ✅ Validate CAPTCHA BEFORE processing
+        $userAnswer = (int) $this->request->getPost('captcha');
+        $correctAnswer = (int) session()->get('math_captcha_answer');
+        if ($userAnswer !== $correctAnswer) {
+            return redirect()->back()->withInput()->with('error', lang('Auth.badCaptcha') ?: 'Incorrect CAPTCHA answer.');
         }
 
         $data = [
@@ -503,6 +487,8 @@ class Home extends BaseController
         ];
 
         if ($this->commonModel->create('users', $data)) {
+            // ✅ Clear CAPTCHA after success
+            session()->remove('math_captcha_answer');
             return redirect()->to('/login')->with('message', 'Registration successful!');
         }
 
@@ -516,13 +502,8 @@ class Home extends BaseController
             return redirect()->to('/');
         }
 
-        // CAPTCHA
-        $cap = new CaptchaBuilder();
-        $cap->setBackgroundColor(139, 203, 183);
-        $cap->build();
-        session()->setFlashdata('cap', $cap->getPhrase());
-
-        return view('auth/login', array_merge($this->defData, ['cap' => $cap]));
+        $mathCaptcha = $this->generateMathCaptcha();
+        return view('auth/login', array_merge($this->defData, ['mathCaptcha' => $mathCaptcha]));
     }
 
     public function loginPost()
@@ -542,10 +523,11 @@ class Home extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // CAPTCHA check
-        $captchaCheck = ($this->request->getPost('captcha') == session()->getFlashdata('cap'));
-        if (ENVIRONMENT !== 'development' && !$captchaCheck) {
-            return redirect()->back()->withInput()->with('error', lang('Auth.badCaptcha') ?: 'Invalid CAPTCHA.');
+        // ✅ Validate CAPTCHA BEFORE login attempt
+        $userAnswer = (int) $this->request->getPost('captcha');
+        $correctAnswer = (int) session()->get('math_captcha_answer');
+        if ($userAnswer !== $correctAnswer) {
+            return redirect()->back()->withInput()->with('error', lang('Auth.badCaptcha') ?: 'Incorrect CAPTCHA answer.');
         }
 
         $email = $this->request->getPost('email');
@@ -553,6 +535,7 @@ class Home extends BaseController
         $remember = (bool) $this->request->getPost('remember');
 
         if ($authLib->attempt(['email' => $email, 'password' => $password], $remember)) {
+            session()->remove('math_captcha_answer');
             return redirect()->to('/');
         }
 

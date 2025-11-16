@@ -11,9 +11,9 @@
 <?php endif; ?>
 
 <?php if (isset($errors) && is_array($errors)): ?>
-    <ul class="alert alert-danger list-unstyled">
+    <ul class="alert alert-danger list-unstyled mb-3">
         <?php foreach ($errors as $error): ?>
-            <li><?= $error ?></li>
+            <li><?= esc($error) ?></li>
         <?php endforeach; ?>
     </ul>
 <?php endif; ?>
