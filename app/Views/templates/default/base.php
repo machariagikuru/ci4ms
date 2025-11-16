@@ -46,23 +46,28 @@
                         <?php
                         $authLib = new \Modules\Auth\Libraries\AuthLibrary();
                         if ($authLib->isLoggedIn()):
-                            $user = $authLib->getUser(); // ✅ Use public method
+                            $user = $authLib->getUser();
                             $displayName = $user ? esc($user->firstname ?? 'User') : 'User';
+                            $groupId = session('group_id');
                             ?>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Hello, <?= $displayName ?>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                    <li><a class="dropdown-item" href="<?= base_url('logout') ?>">Logout</a></li>
+                                    <?php if ($groupId == 2): ?>
+                                        <li><a class="dropdown-item" href="<?= base_url('my-account') ?>"><i class="bi bi-person"></i> My Account</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                    <?php endif; ?>
+                                    <li><a class="dropdown-item" href="<?= base_url('logout') ?>"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
                                 </ul>
                             </li>
                         <?php else: ?>
                             <li class="nav-item">
-                                <a class="nav-link" href="<?= base_url('login') ?>">Login</a>
+                                <a class="nav-link" href="<?= base_url('login') ?>"><i class="bi bi-box-arrow-in-right"></i> Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="<?= base_url('register') ?>">Register</a>
+                                <a class="nav-link" href="<?= base_url('register') ?>"><i class="bi bi-person-plus"></i> Register</a>
                             </li>
                         <?php endif; ?>
                     </ul>
@@ -105,6 +110,26 @@
     <script src="/be-assets/plugins/jquery-ui/jquery-ui.min.js"></script>
     <script src="<?= base_url("templates/default/assets/ci4ms.js") ?>"></script>
     <?= $this->renderSection('javascript') ?>
+
+    <script>
+    // Remember sidebar state
+    document.addEventListener('DOMContentLoaded', function () {
+        const sidebar = document.getElementById('userSidebar');
+        const isExpanded = localStorage.getItem('userSidebarExpanded') === 'true';
+        if (sidebar && isExpanded) {
+            sidebar.classList.add('show');
+        }
+
+        // Toggle on mobile
+        const toggleBtn = document.querySelector('[data-bs-target="#userSidebar"]');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function () {
+                const expanded = sidebar.classList.contains('show');
+                localStorage.setItem('userSidebarExpanded', !expanded);
+            });
+        }
+    });
+    </script>
 </body>
 
 </html>

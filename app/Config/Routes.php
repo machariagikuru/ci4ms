@@ -39,6 +39,14 @@ $routes->post('forgot-password', 'Home::forgotPasswordPost');
 $routes->get('reset-password/(:any)', 'Home::resetPassword/$1');
 $routes->post('reset-password/(:any)', 'Home::resetPasswordPost/$1');
 
+$routes->group('my-account', ['filter' => 'auth'], function($routes) {
+    $routes->get('', 'Home::dashboard');
+    $routes->get('profile', 'Home::profile');
+    $routes->post('profile', 'Home::profileUpdate');
+    $routes->get('password', 'Home::password');
+    $routes->post('password', 'Home::passwordUpdate');
+});
+
 /**
  * --------------------------------------------------------------------
  * Additional Routing
