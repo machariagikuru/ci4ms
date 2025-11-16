@@ -25,7 +25,6 @@ class Home extends BaseController
         $num1 = random_int(1, 10);
         $num2 = random_int(1, 10);
         $answer = $num1 + $num2;
-        // ✅ Use regular session (not flashdata) so it survives form POST
         session()->set('math_captcha_answer', $answer);
         return "$num1 + $num2";
     }
@@ -468,7 +467,6 @@ class Home extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // ✅ Validate CAPTCHA BEFORE processing
         $userAnswer = (int) $this->request->getPost('captcha');
         $correctAnswer = (int) session()->get('math_captcha_answer');
         if ($userAnswer !== $correctAnswer) {
@@ -487,7 +485,6 @@ class Home extends BaseController
         ];
 
         if ($this->commonModel->create('users', $data)) {
-            // ✅ Clear CAPTCHA after success
             session()->remove('math_captcha_answer');
             return redirect()->to('/login')->with('message', 'Registration successful!');
         }
@@ -523,7 +520,6 @@ class Home extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // ✅ Validate CAPTCHA BEFORE login attempt
         $userAnswer = (int) $this->request->getPost('captcha');
         $correctAnswer = (int) session()->get('math_captcha_answer');
         if ($userAnswer !== $correctAnswer) {
@@ -565,20 +561,18 @@ class Home extends BaseController
         }
 
         $email = $this->request->getPost('email');
-        $user = $this->commonModel->selectOne('users', ['email' => $email, 'group_id !=' => 1]); // exclude admins
+        $user = $this->commonModel->selectOne('users', ['email' => $email, 'group_id !=' => 1]);
 
         if (! $user) {
             return redirect()->back()->with('error', lang('Auth.forgotNoUser'));
         }
 
-        // Generate reset token
         $token = $authLib->generateActivateHash();
         $this->commonModel->edit('users', [
             'reset_hash' => $token,
-            'reset_expires' => date('Y-m-d H:i:s', time() + 3600) // 1 hour
+            'reset_expires' => date('Y-m-d H:i:s', time() + 3600)
         ], ['id' => $user->id]);
 
-        // Send email
         $commonLibrary = new \App\Libraries\CommonLibrary();
         $mailResult = $commonLibrary->phpMailer(
             'noreply@' . $_SERVER['HTTP_HOST'],
@@ -723,7 +717,6 @@ class Home extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
-        // Verify current password
         $user = $authLib->getUser();
         $current = $this->request->getPost('current_password');
         if (!password_verify(base64_encode(hash('sha384', $current, true)), $user->password_hash)) {
@@ -732,12 +725,28 @@ class Home extends BaseController
 
         $newHash = $authLib->setPassword($this->request->getPost('new_password'));
         if ($this->commonModel->edit('users', ['password_hash' => $newHash], ['id' => $user->id])) {
-            // Log user out for security
             $authLib->logout();
             return redirect()->to('/login')->with('message', 'Password changed. Please log in again.');
         }
 
         return redirect()->back()->with('error', 'Failed to update password.');
+    }
+
+    // --- Structured Homepage (Partials) ---
+    public function home()
+    {
+        $this->defData['latestBlogs'] = $this->commonModel->lists('blog', '*', ['isActive' => true], 'id DESC', 3);
+
+        // ✅ Fixed: pass empty string '' instead of null for $coverImage
+        $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
+            'Home Page',
+            'Welcome to our site',
+            '/',
+            ['keywords' => ['home', 'welcome']],
+            '' // ← was null, now ''
+        );
+
+        return view('templates/default/home', $this->defData);
     }
 
     public function logout()

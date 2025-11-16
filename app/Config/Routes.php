@@ -1,5 +1,5 @@
 <?php
-
+$routes->get('/', 'Home::home', ['as' => 'home']);
 if (empty(cache('settings'))) {
     $commonModel = new \ci4commonmodel\Models\CommonModel();
     $settings    = $commonModel->lists('settings');
