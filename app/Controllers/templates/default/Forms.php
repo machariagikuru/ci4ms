@@ -90,7 +90,7 @@ class Forms extends \App\Controllers\BaseController
         if (!empty($results)) {
             $tags = array_map(function ($page) {
                 return [
-                    'value' => '[kategori] ' . $page->title,
+                    'value' => '[category] ' . $page->title,
                     'url' => '/category/' . $page->seflink
                 ];
             }, $results);

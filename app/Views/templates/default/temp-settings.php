@@ -56,7 +56,7 @@
                                     <input type="checkbox" name="settings[widgets][sidebar][searchWidget]" value="true" <?=!empty($settings->templateInfos->widgets['sidebar']['searchWidget']) && (boolean)$settings->templateInfos->widgets['sidebar']['searchWidget']===true?'checked':''?>>
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="">Kategori listesi</label>
+                                    <label for="">Category list</label>
                                     <input type="checkbox" name="settings[widgets][sidebar][categoriesWidget]" value="true" <?=!empty($settings->templateInfos->widgets['sidebar']['categoriesWidget']) && (boolean)$settings->templateInfos->widgets['sidebar']['categoriesWidget']===true?'checked':''?>>
                                 </div>
                                 <div class="col-md-4">

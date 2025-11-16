@@ -45,7 +45,13 @@ $routes->group('my-account', ['filter' => 'auth'], function($routes) {
     $routes->post('profile', 'Home::profileUpdate');
     $routes->get('password', 'Home::password');
     $routes->post('password', 'Home::passwordUpdate');
-});
+}); // ✅ Fixed: added missing closing });
+
+// ✅ Fixed: Moved public browsing routes OUTSIDE auth group
+$routes->get('categories', 'Home::browseCategories');
+$routes->get('categories/(:num)', 'Home::browseCategories/$1');
+$routes->get('tags', 'Home::browseTags');
+$routes->get('tags/(:num)', 'Home::browseTags/$1');
 
 /**
  * --------------------------------------------------------------------
@@ -95,9 +101,7 @@ if (is_dir($modulesPath)) {
  * @var RouteCollection $routes
  */
 
-// We get a performance increase by specifying the default
-// route since we don't have to scan directories.
-$routes->get('/', 'Home::index', ['filter' => 'ci4ms', 'as' => 'home']);
+
 $routes->get('maintenance-mode', 'Home::maintenanceMode', ['as' => 'maintenance-mode']);
 $routes->get('blog', 'Home::blog', ['filter' => 'ci4ms']);
 $routes->get('blog/(:num)', 'Home::blog/$1', ['filter' => 'ci4ms']);

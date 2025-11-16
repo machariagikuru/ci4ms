@@ -29,6 +29,32 @@ class Home extends BaseController
         return "$num1 + $num2";
     }
 
+    // --- Structured Homepage (Partials) ---
+    public function home()
+    {
+        // Fetch editable sections (navbar, hero, etc.)
+        $sections = ['navbar', 'hero', 'features', 'testimonials'];
+        foreach ($sections as $section) {
+            $this->defData[$section] = $this->commonModel->selectOne('pages', ['seflink' => $section]);
+        }
+
+        // Fetch dynamic data
+        $this->defData['latestBlogs'] = $this->commonModel->lists('blog', '*', ['isActive' => true], 'id DESC', 3);
+        $this->defData['categories'] = $this->commonModel->lists('categories', '*', ['isActive' => true], 'title ASC');
+        $this->defData['tags'] = $this->commonModel->lists('tags', '*', [], 'tag ASC', 30); // top 30 tags
+
+        // SEO
+        $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
+            'Home Page',
+            'Welcome to our site',
+            '/',
+            ['keywords' => ['home', 'welcome']],
+            ''
+        );
+
+        return view('templates/default/home', $this->defData);
+    }
+
     // --- Public Pages ---
     public function index(string $seflink = '/')
     {
@@ -209,6 +235,7 @@ class Home extends BaseController
         return view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/post', $this->defData);
     }
 
+    // --- Tag Detail (original) ---
     public function tagList(string $seflink)
     {
         if ($this->commonModel->isHave('tags', ['seflink' => $seflink]) !== 1) return show_404();
@@ -311,6 +338,54 @@ class Home extends BaseController
         $this->defData['breadcrumbs'] = $this->commonLibrary->get_breadcrumbs((int)$this->defData['category']->id, 'category');
 
         return view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/list', $this->defData);
+    }
+
+    // --- Frontend Category Browsing (NEW) ---
+    public function browseCategories(int $page = 1)
+    {
+        $perPage = 12;
+        $offset = ($page - 1) * $perPage;
+
+        $this->defData['categories'] = $this->commonModel->lists('categories', '*', ['isActive' => true], 'title ASC', $perPage, $offset);
+        $total = $this->commonModel->count('categories', ['isActive' => true]);
+
+        $pager = \Config\Services::pager();
+        // ✅ Use segment 2 (not 3)
+        $this->defData['pager'] = $pager->makeLinks($page, $perPage, $total, $this->defData['settings']->templateInfos->path, 2);
+
+        $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
+            'Categories',
+            'Browse all categories',
+            'categories',
+            ['keywords' => ['categories', 'blog topics']],
+            ''
+        );
+
+        return view('templates/default/content/categories', $this->defData);
+    }
+
+    // --- Frontend Tag Browsing (NEW) ---
+        public function browseTags(int $page = 1)
+    {
+        $perPage = 12;
+        $offset = ($page - 1) * $perPage;
+
+        $this->defData['tags'] = $this->commonModel->lists('tags', '*', [], 'tag ASC', $perPage, $offset);
+        $total = $this->commonModel->count('tags');
+
+        $pager = \Config\Services::pager();
+        // ✅ Use segment 2 (not 3)
+        $this->defData['pager'] = $pager->makeLinks($page, $perPage, $total, $this->defData['settings']->templateInfos->path, 2);
+
+        $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
+            'Tags',
+            'Browse all tags',
+            'tags',
+            ['keywords' => ['tags', 'topics']],
+            ''
+        );
+
+        return view('templates/default/content/tags', $this->defData);
     }
 
     // --- Comments (AJAX) ---
@@ -730,23 +805,6 @@ class Home extends BaseController
         }
 
         return redirect()->back()->with('error', 'Failed to update password.');
-    }
-
-    // --- Structured Homepage (Partials) ---
-    public function home()
-    {
-        $this->defData['latestBlogs'] = $this->commonModel->lists('blog', '*', ['isActive' => true], 'id DESC', 3);
-
-        // ✅ Fixed: pass empty string '' instead of null for $coverImage
-        $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
-            'Home Page',
-            'Welcome to our site',
-            '/',
-            ['keywords' => ['home', 'welcome']],
-            '' // ← was null, now ''
-        );
-
-        return view('templates/default/home', $this->defData);
     }
 
     public function logout()

@@ -1,6 +1,6 @@
 <?php
 return [
-    'menu' => 'Menüler',
-    'notFindinMenuPages' => 'Menüye eklenebilecek sayfa bulunamadı !',
-    'notFindinMenuBlogs' => 'Menüye eklenebilecek yazı bulunamadı !',
+    'menu' => 'Menü',
+    'notFindinMenuPages' => 'No pages available to add to the menu!',
+    'notFindinMenuBlogs' => 'No blog posts available to add to the menu!',
 ];

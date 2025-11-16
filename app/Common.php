@@ -118,9 +118,9 @@ if (!function_exists('seflink')) {
 }
 
 if (!function_exists('menu')) {
-    function menu($kategori, $parent = null)
+    function menu($category, $parent = null)
     {
-        foreach ($kategori as $menu) {
+        foreach ($category as $menu) {
             if ($menu->parent == $parent) {
                 echo '<li class="';
                 if (empty($menu->parent)) echo 'nav-item';
@@ -134,7 +134,7 @@ if (!function_exists('menu')) {
                 if ((bool)$menu->hasChildren === true) echo ' role="button" data-bs-toggle="dropdown" aria-expanded="false"';
                 echo '>' . $menu->title . '</a>';
                 if ((bool)$menu->hasChildren === true) echo '<ul class="dropdown-menu dropdown-menu-end">';
-                menu($kategori, $menu->id);
+                menu($category, $menu->id);
                 if ((bool)$menu->hasChildren === true) echo '</ul>';
                 echo '</li>';
             }

@@ -425,17 +425,17 @@
                 if (data.content) {
                     const currentModel = editor.getModel();
                     if (currentModel) {
-                        currentModel.dispose(); // Eski modeli temizle (hafıza yönetimi için)
+                        currentModel.dispose(); //Clear the old model (for memory management)
                     }
 
-                    // Yeni model: Dil undefined bırak, URI ile dosya adını ver (otomatik algılama için)
+                    // New model: Leave language as undefined, provide the file name via URI (for automatic detection)
                     const newModel = monaco.editor.createModel(
                         data.content,
-                        undefined, // Dil otomatik algılansın (uzantıya göre)
-                        monaco.Uri.file(fileName) // Dosya adından uzantı algılanır
+                        undefined, // Let the language be detected automatically (based on file extension)
+                        monaco.Uri.file(fileName) // The extension is detected from the file name
                     );
 
-                    // Editör'e yeni modeli ata
+                    // Assign the new model to the editor
                     editor.setModel(newModel);
                     currentPath = path;
                 } else {
