@@ -24,7 +24,7 @@ class InstallService
                 "id" => 1,
                 "name" => "super user",
                 "updated_at" => null,
-                "description" => "Sistemi Yazan Teknik Personel",
+                "description" => "Super User Group with all permissions",
                 "seflink" => "backend",
                 "created_at" => date('Y-m-d H:i:s'),
                 "who_created" => null
@@ -226,7 +226,7 @@ class InstallService
                     </div>
                 </div>
             </section>', 'seflink' => 'hakkimizda', 'isActive' => '1', 'seo' => '{"coverImage":"https:\\/\\/kun-cms\\/uploads\\/media\\/main-vector.png","IMGWidth":"398","IMGHeight":"249","description":"Ci4MS hakkında","keywords":[{"value":"About Us"}]}', 'inMenu' => '1'],
-            ['id' => 2, 'title' => 'İletişim', 'content' => '<section class="py-5">
+            ['id' => 2, 'title' => 'contact', 'content' => '<section class="py-5">
                 <div class="container px-5">
 {\\App\\Libraries\\templates\\default\\Ci4mstemplateLib|contactForm/}
 <!-- Contact cards-->
@@ -338,8 +338,8 @@ class InstallService
         $db = \Config\Database::connect();
         if ($db->table('menu')->countAllResults() === 0) {
             $commonModel->createMany('menu', [
-                ['pages_id' => 1, 'parent' => NULL, 'queue' => 2, 'urlType' => 'pages', 'title' => 'About Us', 'seflink' => 'hakkimizda', 'target' => NULL, 'hasChildren' => 0],
-                ['pages_id' => 2, 'parent' => NULL, 'queue' => 4, 'urlType' => 'pages', 'title' => 'İletişim', 'seflink' => 'iletisim', 'target' => NULL, 'hasChildren' => 0],
+                ['pages_id' => 1, 'parent' => NULL, 'queue' => 2, 'urlType' => 'pages', 'title' => 'About', 'seflink' => 'about', 'target' => NULL, 'hasChildren' => 0],
+                ['pages_id' => 2, 'parent' => NULL, 'queue' => 4, 'urlType' => 'pages', 'title' => 'Contact', 'seflink' => 'contact', 'target' => NULL, 'hasChildren' => 0],
                 ['pages_id' => 3, 'parent' => NULL, 'queue' => 1, 'urlType' => 'pages', 'title' => 'Home Page', 'seflink' => '/', 'target' => NULL, 'hasChildren' => 0],
                 ['pages_id' => NULL, 'parent' => NULL, 'queue' => 3, 'urlType' => 'url', 'title' => 'Blog', 'seflink' => '/blog/1', 'target' => NULL, 'hasChildren' => 0]
             ]);

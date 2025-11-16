@@ -17,7 +17,7 @@ class Forms extends \App\Controllers\BaseController
         if ($this->validate($valData) == false) return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         $commonLibrary = new CommonLibrary();
         $settings = (object)cache('settings');
-        $mailResult = $commonLibrary->phpMailer($this->request->getPost('email'), $this->request->getPost('name'), [['mail' => $settings->company->email]], $this->request->getPost('email'), $this->request->getPost('name'), 'İletişim Formu - ' . $this->request->getPost('phone'), $this->request->getPost('message'));
+        $mailResult = $commonLibrary->phpMailer($this->request->getPost('email'), $this->request->getPost('name'), [['mail' => $settings->company->email]], $this->request->getPost('email'), $this->request->getPost('name'), 'contact form - ' . $this->request->getPost('phone'), $this->request->getPost('message'));
         if ($mailResult === true) return redirect()->back()->with('message', 'Mesajınız tarafımıza iletildi. En kısa zamanda geri dönüş sağlanacaktır');
         else return redirect()->back()->withInput()->with('error', $mailResult);
     }
