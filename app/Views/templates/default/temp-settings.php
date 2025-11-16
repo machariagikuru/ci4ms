@@ -19,7 +19,7 @@
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <a href="<?= route_to('settings') ?>" class="btn btn-outline-info"><i
-                                class="fas fa-arrow-circle-left"></i> Ayarlara Dön</a>
+                                class="fas fa-arrow-circle-left"></i> Return to Settings</a>
                 </ol>
             </div>
         </div>
@@ -47,12 +47,12 @@
                 <div class="row">
                     <div class="col-md-6 card">
                         <div class="card-header bg-success">
-                            <h3 class="card-title font-weight-bold">Sidebar Ayarları</h3>
+                            <h3 class="card-title font-weight-bold">Sidebar Settings</h3>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-4">
-                                    <label for="">Arama</label>
+                                    <label for="">Search</label>
                                     <input type="checkbox" name="settings[widgets][sidebar][searchWidget]" value="true" <?=!empty($settings->templateInfos->widgets['sidebar']['searchWidget']) && (boolean)$settings->templateInfos->widgets['sidebar']['searchWidget']===true?'checked':''?>>
                                 </div>
                                 <div class="col-md-4">
@@ -60,14 +60,14 @@
                                     <input type="checkbox" name="settings[widgets][sidebar][categoriesWidget]" value="true" <?=!empty($settings->templateInfos->widgets['sidebar']['categoriesWidget']) && (boolean)$settings->templateInfos->widgets['sidebar']['categoriesWidget']===true?'checked':''?>>
                                 </div>
                                 <div class="col-md-4">
-                                    <label for="">Arşiv listesi</label>
+                                    <label for="">Archive List </label>
                                     <input type="checkbox" name="settings[widgets][sidebar][archiveWidget]" value="true" <?=!empty($settings->templateInfos->widgets['sidebar']['archiveWidget']) && (boolean)$settings->templateInfos->widgets['sidebar']['archiveWidget']===true?'checked':''?>>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-12">
-                        <button type="submit" class="btn btn-success float-right">Kaydet</button>
+                        <button type="submit" class="btn btn-success float-right">Save</button>
                     </div>
                 </div>
             </form>

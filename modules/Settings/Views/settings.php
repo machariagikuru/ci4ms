@@ -141,7 +141,7 @@
                         <div class="tab-pane fade" id="vert-tabs-templates" role="tabpanel"
                             aria-labelledby="vert-tabs-templates-tab">
                             <div class="row">
-                                <div class="col-12 mb-2"><a href="<?= route_to('backendThemes') ?>" class="btn btn-outline-success float-right">Tema Ekle</a></div>
+                                <div class="col-12 mb-2"><a href="<?= route_to('backendThemes') ?>" class="btn btn-outline-success float-right">Add Theme</a></div>
                                 <hr class="w-100">
                                 <?php foreach ($templates as $key => $template):
                                     $arrContextOptions = [];
@@ -169,7 +169,7 @@
                                                                 </button>
                                                             <?php else: ?>
                                                                 <a href="<?= route_to('templateSettings') ?>"
-                                                                    class="btn btn-outline-primary">Ayarlar</a>
+                                                                    class="btn btn-outline-primary">Settings</a>
                                                             <?php endif; ?>
                                                         </div>
                                                     </div>
