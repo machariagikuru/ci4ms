@@ -88,7 +88,7 @@ if (is_dir(ROOTPATH.'modules')) {
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Home::index',['filter'=>'ci4ms','as'=>'home']);
+$routes->get('/', 'Home::home', ['filter'=>'ci4ms','as'=>'home']);
 $routes->get('maintenance-mode','Home::maintenanceMode',['as'=>'maintenance-mode']);
 $routes->get('blog','Home::blog',['filter'=>'ci4ms']);
 $routes->get('blog/(:num)','Home::blog/$1',['filter'=>'ci4ms']);
