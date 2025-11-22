@@ -100,7 +100,6 @@ $routes->post('repliesComment','Home::repliesComment',['filter'=>'ci4ms','as'=>'
 $routes->post('loadMoreComments','Home::loadMoreComments',['filter'=>'ci4ms','as'=>'loadMoreComments']);
 $routes->post('commentCaptcha','Home::commentCaptcha',['filter'=>'ci4ms','as'=>'commentCaptcha']);
 $routes->post('search','Home::search',['filter'=>'ci4ms','as'=>'search']);
-$routes->get('/(:any)', 'Home::index/$1',['filter'=>'ci4ms']);
 
 // ==== MISSING ROUTES ADDED AT VERY END (CANNOT INTERFERE) ====
 $routes->get('register', 'Home::register');
@@ -125,4 +124,7 @@ $routes->get('categories', 'Home::browseCategories');
 $routes->get('categories/(:num)', 'Home::browseCategories/$1');
 $routes->get('tags', 'Home::browseTags');
 $routes->get('tags/(:num)', 'Home::browseTags/$1');
+
+//wildcard route for user profiles
+$routes->get('/(:any)', 'Home::index/$1',['filter'=>'ci4ms']);
 // ==== END ====
