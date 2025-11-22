@@ -27,6 +27,8 @@ class AuthController extends BaseController
 
     public function login()
     {
+        $session = session();
+
         if ($this->request->is('post')) {
             $rules = [
                 'email' => 'required|valid_email',
@@ -38,13 +40,12 @@ class AuthController extends BaseController
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
 
-            // ✅ STRICT CAPTCHA VALIDATION (no environment bypass)
             $userAnswer = (int) $this->request->getPost('captcha');
-            $correctAnswer = (int) session()->get('admin_math_captcha_answer');
+            $correctAnswer = (int) $session->get('admin_math_captcha_answer');
 
             if ($userAnswer !== $correctAnswer) {
-                // Regenerate CAPTCHA on failure
-                session()->remove('admin_math_captcha_answer');
+                // Remove CAPTCHA after checking failure
+                $session->remove('admin_math_captcha_answer');
                 return redirect()->back()->withInput()->with('error', lang('Auth.badCaptcha') ?: 'Incorrect CAPTCHA answer.');
             }
 
@@ -60,16 +61,26 @@ class AuthController extends BaseController
                 return redirect()->back()->withInput()->with('error', $this->authLib->error() ?? lang('Auth.badAttempt'));
             }
 
-            // Clear CAPTCHA after success
-            session()->remove('admin_math_captcha_answer');
-            $redirectURL = session('redirect_url') ?? 'backend';
-            unset($_SESSION['redirect_url']);
+            // Clear CAPTCHA after successful login
+            $session->remove('admin_math_captcha_answer');
+            $redirectURL = $session->get('redirect_url') ?? 'backend';
+            $session->remove('redirect_url');
 
             return redirect()->route($redirectURL)->withCookies()->with('message', lang('Auth.loginSuccess'));
         }
 
-        $mathCaptcha = $this->generateMathCaptcha();
-        return view('Modules\Auth\Views\login', ['config' => $this->config, 'mathCaptcha' => $mathCaptcha]);
+        // Generate CAPTCHA only if it does not exist
+        if (!$session->has('admin_math_captcha_answer')) {
+            $mathCaptcha = $this->generateMathCaptcha();
+        } else {
+            // Optional: regenerate for display consistency
+            $mathCaptcha = $this->generateMathCaptcha();
+        }
+
+        return view('Modules\Auth\Views\login', [
+            'config' => $this->config,
+            'mathCaptcha' => $mathCaptcha
+        ]);
     }
 
     /**
@@ -83,7 +94,7 @@ class AuthController extends BaseController
         return redirect()->route('login');
     }
 
-    // --- Password reset & activation (unchanged) ---
+    // --- Password reset & activation ---
     public function forgotPassword()
     {
         if ($this->request->is('post')) {

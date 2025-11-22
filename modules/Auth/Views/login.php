@@ -1,6 +1,6 @@
 <?= $this->extend($config->viewLayout) ?>
 <?= $this->section('head') ?>
-<title>Ci4MS - <?= getGitVersion() ?> | Giriş Yap</title>
+<title>StrandNotes - | Log in</title>
 <?= $this->endSection() ?>
 <?= $this->section('content') ?>
 <div class="login-box">
@@ -11,7 +11,9 @@
         <div class="card-body">
             <p class="login-box-msg"><?= lang('Auth.loginMessage') ?></p>
             <?= view('Modules\Auth\Views\_message_block') ?>
-            <form action="<?= route_to('login') ?>" method="post">
+
+            <!-- FIXED: Form posts to backend login route -->
+            <form action="<?= base_url('backend/login') ?>" method="post">
                 <?= csrf_field() ?>
 
                 <div class="input-group mb-3">
@@ -55,9 +57,10 @@
                     </div>
                 </div>
             </form>
+
             <hr>
             <p class="mb-1">
-                <a href="<?= route_to('backend/forgot') ?>"><?= lang('Auth.forgotPassword') ?></a>
+                <a href="<?= base_url('backend/forgot') ?>"><?= lang('Auth.forgotPassword') ?></a>
             </p>
         </div>
     </div>
