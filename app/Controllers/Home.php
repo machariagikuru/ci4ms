@@ -388,63 +388,6 @@ class Home extends BaseController
         return view('templates/default/content/tags', $this->defData);
     }
 
-    // --- Comments (AJAX) ---
-    public function newComment()
-    {
-        if (!$this->request->isAJAX()) return $this->failForbidden();
-
-        $valData = [
-            'comFullName' => ['label' => 'Full name', 'rules' => 'required'],
-            'comEmail' => ['label' => 'E-mail', 'rules' => 'required|valid_email'],
-            'comMessage' => ['label' => 'Join the discussion and leave a comment!', 'rules' => 'required'],
-            'captcha' => ['Captcha' => 'Captcha', 'rules' => 'required']
-        ];
-
-        if (!$this->validate($valData)) return $this->fail($this->validator->getErrors());
-
-        if ($this->request->getPost('captcha') == session()->getFlashdata('cap')) {
-            $badwordFilterSettings = json_decode($this->commonModel->selectOne(
-                'settings',
-                ['option' => 'badwords'],
-                'content'
-            )->content);
-
-            $checked = $this->commonLibrary->commentBadwordFiltering(
-                $this->request->getPost('comMessage'),
-                $badwordFilterSettings->list ?? [],
-                (bool)($badwordFilterSettings->status ?? false),
-                (bool)($badwordFilterSettings->autoReject ?? false)
-            );
-
-            if (is_bool($checked) && !$checked) {
-                return $this->fail('Lütfen kelimelerinize dikkat ediniz.');
-            }
-
-            $data = [
-                'blog_id' => $this->request->getPost('blog_id'),
-                'created_at' => date('Y-m-d H:i:s'),
-                'comFullName' => $this->request->getPost('comFullName'),
-                'comEmail' => $this->request->getPost('comEmail'),
-                'comMessage' => $checked
-            ];
-
-            if (!empty($this->request->getPost('commentID'))) {
-                $data['parent_id'] = $this->request->getPost('commentID');
-                $this->commonModel->edit(
-                    'comments',
-                    ['isThereAnReply' => true],
-                    ['id' => $this->request->getPost('commentID')]
-                );
-            }
-
-            if ($this->commonModel->create('comments', $data)) {
-                return $this->respondCreated(['result' => true]);
-            }
-        }
-
-        return $this->fail('Please get a new captcha !');
-    }
-
     public function repliesComment()
     {
         if (!$this->request->isAJAX()) return $this->failForbidden();
