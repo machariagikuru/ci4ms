@@ -97,7 +97,7 @@ $routes->get('tags/(:num)', 'Home::browseTags/$1');
 $routes->post('newComment', 'Home::newComment', ['filter' => 'ci4ms', 'as' => 'newComment']);
 $routes->post('repliesComment', 'Home::repliesComment', ['filter' => 'ci4ms', 'as' => 'repliesComment']);
 $routes->post('loadMoreComments', 'Home::loadMoreComments', ['filter' => 'ci4ms', 'as' => 'loadMoreComments']);
-$routes->post('commentCaptcha', 'Home::commentCaptcha', ['filter' => 'ci4ms', 'as' => 'commentCaptcha']);
+$routes->post('commentCaptcha', 'Frontend\CommentController::commentCaptcha', ['filter' => 'ci4ms', 'as' => 'commentCaptcha']);
 $routes->post('search', 'Home::search', ['filter' => 'ci4ms', 'as' => 'search']);
 
 // Frontend Auth Routes (handled by main app routes.php)
