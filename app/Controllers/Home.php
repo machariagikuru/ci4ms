@@ -388,39 +388,6 @@ class Home extends BaseController
         return view('templates/default/content/tags', $this->defData);
     }
 
-    public function loadMoreComments()
-    {
-        if (!$this->request->isAJAX()) return $this->failForbidden();
-
-        $valData = [
-            'blogID' => ['label' => 'Blog ID', 'rules' => 'required|string'],
-            'skip' => ['label' => 'data-skip', 'rules' => 'required|is_natural_no_zero']
-        ];
-
-        if (!empty($this->request->getPost('comID'))) {
-            $valData['comID'] = ['label' => 'Comment ID', 'rules' => 'required|string'];
-        }
-
-        if (!$this->validate($valData)) return $this->fail($this->validator->getErrors());
-
-        helper('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/funcs');
-
-        $data = ['blog_id' => $this->request->getPost('blogID')];
-        if (!empty($this->request->getPost('comID'))) {
-            $data['parent_id'] = $this->request->getPost('comID');
-        }
-
-        $comments = $this->commonModel->lists('comments', '*', $data, 'id ASC', 5, (int)$this->request->getPost('skip'));
-
-        return $this->respond([
-            'display' => view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/loadMoreComments', [
-                'comments' => $comments,
-                'blogID' => $this->request->getPost('blogID')
-            ]),
-            'count' => count($comments)
-        ], 200);
-    }
-
     // --- Public Auth: Login & Register (Frontend) ---
 
     public function register()
