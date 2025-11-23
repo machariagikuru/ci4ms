@@ -100,8 +100,8 @@ $routes->post('commentCaptcha', 'Frontend\CommentController::commentCaptcha', ['
 $routes->post('search', 'Home::search', ['filter' => 'ci4ms', 'as' => 'search']);
 
 // Frontend Auth Routes (handled by main app routes.php)
-$routes->get('register', 'Home::register');
-$routes->post('register', 'Home::registerPost');
+$routes->get('register', 'Frontend\AuthController::register');
+$routes->post('register', 'Frontend\AuthController::registerPost');
 $routes->get('login', 'Home::login');
 $routes->post('login', 'Home::loginPost');
 $routes->get('logout', 'Home::logout');
