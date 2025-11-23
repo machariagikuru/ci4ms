@@ -89,7 +89,7 @@ class Blog extends \Modules\Backend\Controllers\BaseController
             if ($this->commonModel->isHave('blog', ['seflink' => $this->request->getPost('seflink')]) === 1) {
                 return redirect()->back()
                     ->withInput()
-                    ->with('error', 'Blog seflink adresi daha önce kullanılmış. Lütfen kontrol ederek tekrar deneyiniz.');
+                    ->with('error', 'The blog seflink address has already been used. Please check and try again.');
             }
 
             $data = [
