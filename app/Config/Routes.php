@@ -81,12 +81,12 @@ $routes->get('/', 'Home::home', ['filter' => 'ci4ms', 'as' => 'home']);
 $routes->get('maintenance-mode', 'Home::maintenanceMode', ['as' => 'maintenance-mode']);
 
 // Blog
-$routes->get('blog', 'Home::blog', ['filter' => 'ci4ms']);
 $routes->get('blog', 'Frontend\BlogController::blog', ['filter' => 'ci4ms']);
 $routes->get('blog/(:num)', 'Frontend\BlogController::blog/$1', ['filter' => 'ci4ms']);
+$routes->get('blog/(:any)', 'Frontend\BlogController::blogDetail/$1', ['filter' => 'ci4ms']);
 // Tags & Categories
-$routes->get('tag/(:any)', 'Home::tagList/$1', ['filter' => 'ci4ms', 'as' => 'tag']);
-$routes->get('category/(:any)', 'Home::category/$1', ['filter' => 'ci4ms', 'as' => 'category']);
+$routes->get('tag/(:any)', 'Frontend\BlogController::tagList/$1', ['filter' => 'ci4ms', 'as' => 'tag']);
+$routes->get('category/(:any)', 'Frontend\BlogController::category/$1', ['filter' => 'ci4ms', 'as' => 'category']);
 $routes->get('categories', 'Frontend\BlogController::browseCategories');
 $routes->get('categories/(:num)', 'Frontend\BlogController::browseCategories/$1');
 $routes->get('tags', 'Frontend\BlogController::browseTags');
