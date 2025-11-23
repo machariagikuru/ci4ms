@@ -66,5 +66,73 @@ class BlogController extends BaseController
         return view('templates/default/content/categories', $this->defData);
     }
 
+    public function blogDetail(string $seflink)
+    {
+        if ($this->commonModel->isHave('blog', ['seflink' => $seflink, 'isActive' => true]) !== 1) {
+            return show_404();
+        }
+
+        $this->defData['infos'] = $this->commonModel->selectOne('blog', ['seflink' => $seflink]);
+        $seo = !empty($this->defData['infos']->seo) ? json_decode($this->defData['infos']->seo, false) : (object) [];
+        if (!is_object($seo)) $seo = (object) [];
+        $this->defData['infos']->seo = $seo;
+
+        $userModel = new UserscrudModel();
+        $authorInfo = $userModel->loggedUser(0, 'users.*,auth_groups.name as groupName', ['users.id' => $this->defData['infos']->author]);
+        if (empty($authorInfo)) return show_404();
+
+        $this->defData['authorInfo'] = $authorInfo[0];
+        $this->defData['dateI18n'] = new Time();
+        $modelTag = new AjaxModel();
+        $this->defData['tags'] = $modelTag->limitTags_ajax(['piv_id' => $this->defData['infos']->id]);
+
+        $keywords = [];
+        if (!empty($this->defData['tags'])) {
+            foreach ($this->defData['tags'] as $tag) {
+                $keywords[] = $tag->tag;
+            }
+        }
+
+        helper('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/funcs');
+
+        $this->defData['comments'] = $this->commonModel->lists('comments', '*', ['blog_id' => $this->defData['infos']->id], 'id ASC', 5);
+
+        $description = $seo->description ?? '';
+        $coverImage = $seo->coverImage ?? '';
+        $authorName = ($this->defData['authorInfo']->firstname ?? '') . ' ' . ($this->defData['authorInfo']->sirname ?? '');
+
+        $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
+            $this->defData['infos']->title,
+            $description,
+            'blog/' . $seflink,
+            ['keywords' => $keywords, 'author' => $authorName],
+            $coverImage
+        );
+
+        $this->defData['categories'] = $this->commonModel->lists('categories');
+        $this->defData['schema'] = $this->ci4msseoLibrary->ldPlusJson('BlogPosting', [
+            'url' => site_url(implode('/', $this->request->getUri()->getSegments())),
+            'logo' => $this->defData['settings']->logo ?? '',
+            'name' => $this->defData['settings']->siteName ?? '',
+            'headline' => $this->defData['infos']->title ?? '',
+            'image' => $coverImage,
+            'description' => $description,
+            'datePublished' => $this->defData['infos']->created_at ?? '',
+            'children' => [
+                'mainEntityOfPage' => ['WebPage' => []],
+                'ContactPoint' => [
+                    'ContactPoint' => [
+                        'telephone' => $this->defData['settings']->company->phone ?? '',
+                        'contactType' => 'customer support'
+                    ]
+                ]
+            ],
+            'sameAs' => array_map(fn($sN) => $sN['link'] ?? '', (array)($this->defData['settings']->socialNetwork ?? []))
+        ]);
+
+        $this->defData['breadcrumbs'] = $this->commonLibrary->get_breadcrumbs((int)$this->defData['infos']->id, 'blog');
+        return view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/post', $this->defData);
+    }
+
     // Blog methods will go here
 }
