@@ -109,13 +109,14 @@ $routes->get('forgot-password', 'Frontend\AuthController::forgotPassword');
 $routes->post('forgot-password', 'Frontend\AuthController::forgotPasswordPost');
 $routes->get('reset-password/(:any)', 'Frontend\AuthController::resetPassword/$1');
 $routes->post('reset-password/(:any)', 'Frontend\AuthController::resetPasswordPost/$1');
+
 // My Account
 $routes->group('my-account', ['filter' => 'auth'], function ($routes) {
-    $routes->get('', 'Home::dashboard');
-    $routes->get('profile', 'Home::profile');
-    $routes->post('profile', 'Home::profileUpdate');
-    $routes->get('password', 'Home::password');
-    $routes->post('password', 'Home::passwordUpdate');
+    $routes->get('', 'Frontend\AuthController::dashboard');
+    $routes->get('profile', 'Frontend\AuthController::profile');
+    $routes->post('profile', 'Frontend\AuthController::profileUpdate');
+    $routes->get('password', 'Frontend\AuthController::password');
+    $routes->post('password', 'Frontend\AuthController::passwordUpdate');
 });
 
 // Wildcard route for user profiles
