@@ -39,11 +39,6 @@
                         <?php foreach ($blogs as $blog): ?>
                             <div class="col-lg-6 mb-5">
                                 <div class="card h-100 shadow border-0">
-                                    <img class="card-img-top"
-                                        src="<?= (!empty($blog->seo->coverImage))
-                                            ? esc($blog->seo->coverImage)
-                                            : 'https://dummyimage.com/600x350/ced4da/6c757d' ?>"
-                                        alt="<?= esc($blog->title) ?>" />
                                     <div class="card-body p-4">
                                         <?php if (!empty($blog->tags)): ?>
                                             <?php foreach ($blog->tags as $tag): ?>
@@ -52,27 +47,29 @@
                                                 </div>
                                             <?php endforeach; ?>
                                         <?php endif; ?>
-                                        <a class="text-decoration-none link-dark stretched-link"
-                                            href="<?= site_url('blog/' . $blog->seflink) ?>">
-                                            <div class="h5 card-title mb-3"><?= esc($blog->title) ?></div>
+                                        <h5 class="card-title mb-2">
+                                            <a href="<?= site_url('blog/' . $blog->seflink) ?>" class="text-decoration-none text-dark">
+                                                <?= esc($blog->title) ?>
+                                            </a>
+                                        </h5>
+                                        <?php
+                                        $content = $blog->content ?? '';
+                                        $plainText = trim(strip_tags($content));
+                                        if ($plainText === '') {
+                                            $excerpt = 'No excerpt available.';
+                                        } else {
+                                            $maxLength = 120;
+                                            if (strlen($plainText) > $maxLength) {
+                                                $excerpt = substr($plainText, 0, $maxLength - 3) . '...';
+                                            } else {
+                                                $excerpt = $plainText;
+                                            }
+                                        }
+                                        ?>
+                                        <p class="card-text text-muted mb-3"><?= esc($excerpt) ?></p>
+                                        <a href="<?= site_url('blog/' . $blog->seflink) ?>" class="btn btn-outline-primary btn-sm px-3">
+                                            Read more
                                         </a>
-                                        <p class="card-text mb-0"><?= esc($blog->seo->description ?? '') ?></p>
-                                    </div>
-                                    <div class="card-footer p-4 pt-0 bg-transparent border-top-0">
-                                        <div class="d-flex align-items-end justify-content-between">
-                                            <div class="d-flex align-items-center">
-                                                <img class="rounded-circle me-3"
-                                                    src="https://dummyimage.com/40x40/ced4da/6c757d" alt="..." />
-                                                <div class="small">
-                                                    <div class="fw-bold">
-                                                        <?= esc($blog->author->firstname ?? '') . ' ' . esc($blog->author->sirname ?? '') ?>
-                                                    </div>
-                                                    <div class="text-muted">
-                                                        <?= $dateI18n->createFromTimestamp(strtotime($blog->created_at), app_timezone(), 'tr_TR')->toFormattedDateString(); ?>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

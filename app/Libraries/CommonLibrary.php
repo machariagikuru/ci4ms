@@ -165,12 +165,23 @@ class CommonLibrary
      */
     private function getHomepageBreadcrumb()
     {
-        $menus = (object)cache('menus');
-        $homepage = array_filter((array) $menus, function ($menu) {
-            return $menu->seflink == '/';
+        $menus = (array) cache('menus'); // Ensure it's an array
+        $homepage = array_filter($menus, function ($menu) {
+            return isset($menu->seflink) && $menu->seflink === '/';
         });
-        if (!empty($homepage)) return reset($homepage);
-        else return [];
+
+        if (!empty($homepage)) {
+            return reset($homepage);
+        }
+
+        // Fallback: return a default homepage object to prevent errors
+        return (object) [
+            'title'    => 'Home',
+            'seflink'  => '/',
+            'id'       => null,
+            'parent'   => null,
+            'pages_id' => null
+        ];
     }
 
     /**

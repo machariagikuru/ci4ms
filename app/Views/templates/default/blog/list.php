@@ -4,22 +4,22 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-<header class="py-5 bg-light border-bottom mb-4">
-    <div class="container">
-        <div class="text-center my-5">
-            <h1 class="fw-bolder">
+<header class="py-4 mb-4">
+    <div class="container px-3" style="max-width: 720px;">
+        <div class="text-center mb-3">
+            <h1 class="h2 fw-bold">
                 <?= isset($category) ? esc($category->title) : 'Blog' ?>
             </h1>
         </div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb">
+        <nav aria-label="breadcrumb" class="text-muted small">
+            <ol class="breadcrumb justify-content-center mb-0">
                 <?php foreach ($breadcrumbs as $breadcrumb): ?>
                     <li class="breadcrumb-item <?= empty($breadcrumb['url']) ? 'active' : '' ?>"
                         <?= empty($breadcrumb['url']) ? 'aria-current="page"' : '' ?>>
                         <?php if (empty($breadcrumb['url'])): ?>
                             <?= esc($breadcrumb['title']) ?>
                         <?php else: ?>
-                            <a href="<?= site_url($breadcrumb['url']) ?>"><?= esc($breadcrumb['title']) ?></a>
+                            <a href="<?= site_url($breadcrumb['url']) ?>" class="text-muted text-decoration-none"><?= esc($breadcrumb['title']) ?></a>
                         <?php endif; ?>
                     </li>
                 <?php endforeach; ?>
@@ -28,84 +28,61 @@
     </div>
 </header>
 
-<section class="py-5">
-    <div class="container">
+<section class="py-4">
+    <div class="container px-3">
         <div class="row">
-            <div class="<?= (!empty($settings->templateInfos->widgets['sidebar'])) ? 'col-md-9' : 'col-md-12' ?>">
-                <div class="px-5">
-                    <div class="row gx-5">
+            <div class="<?= (!empty($settings->templateInfos->widgets['sidebar'])) ? 'col-lg-8' : 'col-lg-12' ?>">
+                <div class="mx-auto" style="max-width: 720px;">
+                    <?php if (empty($blogs)): ?>
+                        <p class="text-muted text-center py-5">No blog posts found.</p>
+                    <?php else: ?>
                         <?php foreach ($blogs as $blog): ?>
                             <?php
-                            // Safely decode SEO; fallback to empty object
+                            // Safely decode SEO metadata
                             $seo = !empty($blog->seo) ? json_decode($blog->seo, false) : (object) [];
-                            if (!is_object($seo)) {
-                                $seo = (object) [];
-                            }
+                            if (!is_object($seo)) $seo = (object) [];
 
-                            // Safely get tags (ensure it's iterable)
+                            // Use SEO description if available, otherwise fall back to truncated content (if exists)
+                            $excerpt = !empty($seo->description)
+                                ? esc($seo->description)
+                                : (!empty($blog->content)
+                                    ? esc(word_limiter(strip_tags($blog->content), 30))
+                                    : '');
+
+                            // Tags (optional, kept for categorization context)
                             $tags = !empty($blog->tags) && is_array($blog->tags) ? $blog->tags : [];
                             ?>
-                            <div class="col-lg-6 mb-5">
-                                <div class="card h-100 shadow border-0">
-                                    <img class="card-img-top"
-                                        src="<?= !empty($seo->coverImage) ? esc($seo->coverImage) : 'https://dummyimage.com/600x350/ced4da/6c757d' ?>"
-                                        alt="<?= esc($blog->title) ?>" />
-                                    <div class="card-body p-4">
+                            <article class="py-4 border-bottom border-light">
+                                <h2 class="h4 mb-2">
+                                    <a href="<?= site_url('blog/' . esc($blog->seflink)) ?>" class="text-decoration-none link-dark">
+                                        <?= esc($blog->title) ?>
+                                    </a>
+                                </h2>
+
+                                <?php if (!empty($tags)): ?>
+                                    <div class="mb-3">
                                         <?php foreach ($tags as $tag): ?>
-                                            <div class="badge bg-primary bg-gradient rounded-pill mb-2">
-                                                <?= isset($tag->tag) ? esc($tag->tag) : '' ?>
-                                            </div>
+                                            <?php if (isset($tag->tag)): ?>
+                                                <span class="badge bg-light text-muted fw-normal me-1"><?= esc($tag->tag) ?></span>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
-
-                                        <a class="text-decoration-none link-dark stretched-link"
-                                            href="<?= site_url('blog/' . esc($blog->seflink)) ?>">
-                                            <div class="h5 card-title mb-3"><?= esc($blog->title) ?></div>
-                                        </a>
-
-                                        <p class="card-text mb-0">
-                                            <?= isset($seo->description) ? esc($seo->description) : '' ?>
-                                        </p>
                                     </div>
+                                <?php endif; ?>
 
-                                    <div class="card-footer p-4 pt-0 bg-transparent border-top-0">
-                                        <div class="d-flex align-items-end justify-content-between">
-                                            <div class="d-flex align-items-center">
-                                                <img class="rounded-circle me-3"
-                                                    src="https://dummyimage.com/40x40/ced4da/6c757d" alt="Author" />
-                                                <div class="small">
-                                                    <?php
-                                                    $authorName = '';
-                                                    if (!empty($blog->author)) {
-                                                        $authorName = trim(esc($blog->author->firstname ?? '') . ' ' . esc($blog->author->sirname ?? ''));
-                                                    }
-                                                    if (empty($authorName)) {
-                                                        $authorName = lang('Blog.unknownAuthor') ?? 'Anonymous';
-                                                    }
-                                                    ?>
-                                                    <div class="fw-bold"><?= $authorName ?></div>
-                                                    <div class="text-muted">
-                                                        <?php if (!empty($blog->created_at) && $blog->created_at !== '0000-00-00 00:00:00'): ?>
-                                                            <?php
-                                                            try {
-                                                                $date = \CodeIgniter\I18n\Time::createFromTimestamp(strtotime($blog->created_at), app_timezone(), 'tr_TR');
-                                                                echo $date->toLocalizedString('dd MMMM yyyy HH:mm');
-                                                            } catch (Exception $e) {
-                                                                echo esc($blog->created_at);
-                                                            }
-                                                            ?>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                <?php if ($excerpt): ?>
+                                    <p class="text-muted mb-3"><?= $excerpt ?></p>
+                                <?php endif; ?>
+
+                                <a href="<?= site_url('blog/' . esc($blog->seflink)) ?>"
+                                   class="link-primary text-decoration-none fw-medium">
+                                    Read more<span class="visually-hidden">: <?= esc($blog->title) ?></span>
+                                </a>
+                            </article>
                         <?php endforeach; ?>
-                    </div>
+                    <?php endif; ?>
 
                     <?php if (isset($pager) && $pager): ?>
-                        <div class="text-end mb-5 mb-xl-0">
+                        <div class="mt-5 text-center">
                             <?= $pager ?>
                         </div>
                     <?php endif; ?>
@@ -113,7 +90,9 @@
             </div>
 
             <?php if (!empty($settings->templateInfos->widgets['sidebar'])): ?>
-                <?= view('templates/default/widgets/sidebar') ?>
+                <div class="col-lg-4 mt-5 mt-lg-0">
+                    <?= view('templates/default/widgets/sidebar') ?>
+                </div>
             <?php endif; ?>
         </div>
     </div>
