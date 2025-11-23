@@ -364,30 +364,6 @@ class Home extends BaseController
         return view('templates/default/content/categories', $this->defData);
     }
 
-    // --- Frontend Tag Browsing (NEW) ---
-        public function browseTags(int $page = 1)
-    {
-        $perPage = 12;
-        $offset = ($page - 1) * $perPage;
-
-        $this->defData['tags'] = $this->commonModel->lists('tags', '*', [], 'tag ASC', $perPage, $offset);
-        $total = $this->commonModel->count('tags');
-
-        $pager = \Config\Services::pager();
-        // ✅ Use segment 2 (not 3)
-        $this->defData['pager'] = $pager->makeLinks($page, $perPage, $total, $this->defData['settings']->templateInfos->path, 2);
-
-        $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
-            'Tags',
-            'Browse all tags',
-            'tags',
-            ['keywords' => ['tags', 'topics']],
-            ''
-        );
-
-        return view('templates/default/content/tags', $this->defData);
-    }
-
     // --- Public Auth: Login & Register (Frontend) ---
 
     public function register()

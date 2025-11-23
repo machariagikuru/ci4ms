@@ -90,8 +90,8 @@ $routes->get('tag/(:any)', 'Home::tagList/$1', ['filter' => 'ci4ms', 'as' => 'ta
 $routes->get('category/(:any)', 'Home::category/$1', ['filter' => 'ci4ms', 'as' => 'category']);
 $routes->get('categories', 'Home::browseCategories');
 $routes->get('categories/(:num)', 'Home::browseCategories/$1');
-$routes->get('tags', 'Home::browseTags');
-$routes->get('tags/(:num)', 'Home::browseTags/$1');
+$routes->get('tags', 'Frontend\BlogController::browseTags');
+$routes->get('tags/(:num)', 'Frontend\BlogController::browseTags/$1');
 
 // Comments
 $routes->post('newComment', 'Frontend\CommentController::newComment', ['filter' => 'ci4ms', 'as' => 'newComment']);
