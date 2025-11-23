@@ -62,11 +62,6 @@ $routes->post('commentCaptcha', 'Frontend\CommentController::commentCaptcha', ['
 $routes->post('search', 'Home::search', ['as' => 'search']);
 
 // --------------------------------------------------------------------
-// Wildcard Route (MUST be last)
-// --------------------------------------------------------------------
-$routes->get('(:any)', 'Frontend\PageController::index/$1');
-
-// --------------------------------------------------------------------
 // Module Routes (Loaded only in HTTP context to avoid CLI issues)
 // --------------------------------------------------------------------
 if (!\is_cli()) {
@@ -83,4 +78,10 @@ if (!\is_cli()) {
             }
         }
     }
+
+    // --------------------------------------------------------------------
+    // Wildcard Route (MUST be last)
+    // --------------------------------------------------------------------
+    $routes->get('(:any)', 'Frontend\PageController::index/$1');
+
 }

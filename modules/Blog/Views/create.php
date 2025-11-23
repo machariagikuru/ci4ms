@@ -104,32 +104,9 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="form-group col-md-12 row">
-                        <div class="col-md-12 form-group">
-                            <label for=""><?=lang('Backend.coverImage')?></label>
-                            <img src="" alt="" class="pageimg img-fluid">
-                        </div>
-                        <div class="col-md-12 form-group">
-                            <label for=""><?=lang('Backend.coverImgURL')?></label>
-                            <input type="text" name="pageimg" class="form-control pageimg-input"
-                                   placeholder="Görsel URL">
-                        </div>
-                        <div class="col-md-12 row form-group">
-                            <div class="col-sm-6">
-                                <label for=""><?=lang('Backend.coverImgWith')?></label>
-                                <input type="number" name="pageIMGWidth" class="form-control" id="pageIMGWidth"
-                                       readonly>
-                            </div>
-                            <div class="col-sm-6">
-                                <label for=""><?=lang('Backend.coverImgHeight')?></label>
-                                <input type="number" name="pageIMGHeight" class="form-control" id="pageIMGHeight"
-                                       readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-12 form-group">
-                            <button type="button" class="pageIMG btn btn-info w-100"><?=lang('Backend.selectCoverImg')?></button>
-                        </div>
-                    </div>
+
+                    <!-- ✅ REMOVED: Cover image section (URL, preview, select button, dimensions) -->
+
                     <div class="form-group col-md-12">
                         <label for=""><?=lang('Backend.seoDescription')?></label>
                         <textarea class="form-control" name="description"></textarea>
@@ -196,7 +173,7 @@
     $('.seflink').on('change', function () {
         $.post('<?=route_to('checkSeflink')?>', {
             "<?=csrf_token()?>": "<?=csrf_hash()?>",
-            'makeSeflink': $(this).val(),
+            'makeSefink': $(this).val(),
             'where': 'blog'
         }, 'json').done(function (data) {
             $('.seflink').val(data.seflink);

@@ -85,30 +85,9 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-12 form-group">
-                        <label for=""><?=lang('Backend.coverImage')?></label>
-                        <img src="" alt="" class="pageimg img-fluid">
-                    </div>
-                    <div class="col-md-12 form-group">
-                        <label for=""><?=lang('Backend.coverImgURL')?></label>
-                        <input type="text" name="pageimg" class="form-control pageimg-input"
-                               placeholder="<?=lang('Backend.coverImgURL')?>">
-                    </div>
-                    <div class="col-md-12 row form-group">
-                        <div class="col-sm-6">
-                            <label for=""><?=lang('Backend.coverImgWith')?></label>
-                            <input type="number" name="pageIMGWidth" class="form-control" id="pageIMGWidth"
-                                   readonly>
-                        </div>
-                        <div class="col-sm-6">
-                            <label for=""><?=lang('Backend.coverImgHeight')?></label>
-                            <input type="number" name="pageIMGHeight" class="form-control" id="pageIMGHeight"
-                                   readonly>
-                        </div>
-                    </div>
-                    <div class="col-md-12 form-group">
-                        <button type="button" class="pageIMG btn btn-info w-100"><?=lang('Backend.selectCoverImg')?></button>
-                    </div>
+
+                    <!-- ✅ REMOVED: Cover image section (preview, URL, dimensions, select button) -->
+
                     <div class="col-md-12 form-group">
                         <label for=""><?=lang('Backend.seoKeywords')?></label>
                         <textarea name="keywords" class="keywords" placeholder="<?=lang('Backend.tagPlaceholder')?>"></textarea>
