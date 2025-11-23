@@ -340,29 +340,6 @@ class Home extends BaseController
         return view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/list', $this->defData);
     }
 
-    // --- Frontend Category Browsing (NEW) ---
-    public function browseCategories(int $page = 1)
-    {
-        $perPage = 12;
-        $offset = ($page - 1) * $perPage;
-
-        $this->defData['categories'] = $this->commonModel->lists('categories', '*', ['isActive' => true], 'title ASC', $perPage, $offset);
-        $total = $this->commonModel->count('categories', ['isActive' => true]);
-
-        $pager = \Config\Services::pager();
-        // ✅ Use segment 2 (not 3)
-        $this->defData['pager'] = $pager->makeLinks($page, $perPage, $total, $this->defData['settings']->templateInfos->path, 2);
-
-        $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
-            'Categories',
-            'Browse all categories',
-            'categories',
-            ['keywords' => ['categories', 'blog topics']],
-            ''
-        );
-
-        return view('templates/default/content/categories', $this->defData);
-    }
 
     // --- Public Auth: Login & Register (Frontend) ---
 

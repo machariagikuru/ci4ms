@@ -88,8 +88,8 @@ $routes->get('blog/(:any)', 'Home::blogDetail/$1', ['filter' => 'ci4ms']);
 // Tags & Categories
 $routes->get('tag/(:any)', 'Home::tagList/$1', ['filter' => 'ci4ms', 'as' => 'tag']);
 $routes->get('category/(:any)', 'Home::category/$1', ['filter' => 'ci4ms', 'as' => 'category']);
-$routes->get('categories', 'Home::browseCategories');
-$routes->get('categories/(:num)', 'Home::browseCategories/$1');
+$routes->get('categories', 'Frontend\BlogController::browseCategories');
+$routes->get('categories/(:num)', 'Frontend\BlogController::browseCategories/$1');
 $routes->get('tags', 'Frontend\BlogController::browseTags');
 $routes->get('tags/(:num)', 'Frontend\BlogController::browseTags/$1');
 
