@@ -1,22 +1,18 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Frontend;
 
+use App\Controllers\BaseController;
 use App\Libraries\CommonLibrary;
-use App\Models\Ci4ms;
-use CodeIgniter\I18n\Time;
-use Modules\Backend\Models\AjaxModel;
-use Modules\Users\Models\UserscrudModel;
 
-class Home extends BaseController
+class PageController extends BaseController
 {
-    private $commonLibrary;
-    private $ci4msModel;
+    private CommonLibrary $commonLibrary;
 
     public function __construct()
     {
         $this->commonLibrary = new CommonLibrary();
-        $this->ci4msModel = new Ci4ms();
+        // $this->defData, $this->commonModel, etc. inherited from BaseController
     }
 
     // --- Structured Homepage (Partials) ---
@@ -107,11 +103,5 @@ class Home extends BaseController
         }
         return view('maintenance', $this->defData);
     }
-
-    public function logout()
-    {
-        $authLib = new \Modules\Auth\Libraries\AuthLibrary();
-        $authLib->logout();
-        return redirect()->to('/');
-    }
 }
+

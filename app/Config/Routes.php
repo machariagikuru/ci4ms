@@ -77,8 +77,8 @@ if (is_dir(ROOTPATH . 'modules')) {
  */
 
 // Frontend Default Routes
-$routes->get('/', 'Home::home', ['filter' => 'ci4ms', 'as' => 'home']);
-$routes->get('maintenance-mode', 'Home::maintenanceMode', ['as' => 'maintenance-mode']);
+$routes->get('/', 'Frontend\PageController::home', ['filter' => 'ci4ms', 'as' => 'home']);
+$routes->get('maintenance-mode', 'Frontend\PageController::maintenanceMode', ['as' => 'maintenance-mode']);
 
 // Blog
 $routes->get('blog', 'Frontend\BlogController::blog', ['filter' => 'ci4ms']);
@@ -119,5 +119,5 @@ $routes->group('my-account', ['filter' => 'auth'], function ($routes) {
     $routes->post('password', 'Frontend\AuthController::passwordUpdate');
 });
 
-// Wildcard route for user profiles
-$routes->get('/(:any)', 'Home::index/$1', ['filter' => 'ci4ms']);
+// Wildcard route for dynamic pages
+$routes->get('/(:any)', 'Frontend\PageController::index/$1', ['filter' => 'ci4ms']);
