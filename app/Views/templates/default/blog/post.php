@@ -51,36 +51,12 @@
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </header>
-                    <!-- Preview image figure-->
-                    <figure class="mb-4">
-                        <img class="img-fluid rounded"
-                            src="<?= isset($infos->seo->coverImage) ? esc($infos->seo->coverImage) : 'https://dummyimage.com/600x400/ced4da/6c757d' ?>"
-                            alt="<?= esc($infos->title ?? '') ?>" />
-                    </figure>
-                    <!-- Post content-->
+
+                    <!-- Post content (text-only, no images) -->
                     <section class="mb-5">
                         <?= $infos->content ?? '' ?>
                     </section>
                     <hr>
-                    <div class="d-flex align-items-center mt-lg-5 mb-4">
-                        <?php if (empty($authorInfo->profileIMG)): ?>
-                            <img class="img-fluid rounded-circle"
-                                src="https://dummyimage.com/50x50/ced4da/6c757d.jpg"
-                                alt="<?= esc(($authorInfo->firstname ?? '') . ' ' . ($authorInfo->sirname ?? '')) ?>" />
-                        <?php else: ?>
-                            <img class="img-fluid rounded-circle"
-                                src="<?= esc($authorInfo->profileIMG) ?>"
-                                alt="<?= esc(($authorInfo->firstname ?? '') . ' ' . ($authorInfo->sirname ?? '')) ?>" />
-                        <?php endif; ?>
-                        <div class="ms-3">
-                            <div class="fw-bold">
-                                <?= esc(($authorInfo->firstname ?? '') . ' ' . ($authorInfo->sirname ?? '')) ?>
-                            </div>
-                            <div class="text-muted">
-                                <?= esc($authorInfo->groupName ?? '') ?>
-                            </div>
-                        </div>
-                    </div>
                 </article>
                 <hr>
                 <!-- Comments section -->
