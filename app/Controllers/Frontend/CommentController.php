@@ -99,5 +99,23 @@ class CommentController extends BaseController
         return $this->fail('Please get a new captcha !');
     }
 
+    public function repliesComment()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->failForbidden();
+        }
+
+        $valData = ['comID' => ['label' => 'Comment', 'rules' => 'required']];
+        if (!$this->validate($valData)) {
+            return $this->fail($this->validator->getErrors());
+        }
+
+        return $this->respond([
+            'display' => view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/replies', [
+                'replies' => $this->commonModel->lists('comments', '*', ['parent_id' => $this->request->getPost('comID')])
+            ])
+        ], 200);
+    }
+
     // We will move methods here in the next step
 }

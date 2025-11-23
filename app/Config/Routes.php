@@ -95,7 +95,7 @@ $routes->get('tags/(:num)', 'Home::browseTags/$1');
 
 // Comments
 $routes->post('newComment', 'Frontend\CommentController::newComment', ['filter' => 'ci4ms', 'as' => 'newComment']);
-$routes->post('repliesComment', 'Home::repliesComment', ['filter' => 'ci4ms', 'as' => 'repliesComment']);
+$routes->post('repliesComment', 'Frontend\CommentController::repliesComment', ['filter' => 'ci4ms', 'as' => 'repliesComment']);
 $routes->post('loadMoreComments', 'Home::loadMoreComments', ['filter' => 'ci4ms', 'as' => 'loadMoreComments']);
 $routes->post('commentCaptcha', 'Frontend\CommentController::commentCaptcha', ['filter' => 'ci4ms', 'as' => 'commentCaptcha']);
 $routes->post('search', 'Home::search', ['filter' => 'ci4ms', 'as' => 'search']);

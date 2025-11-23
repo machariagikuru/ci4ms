@@ -388,20 +388,6 @@ class Home extends BaseController
         return view('templates/default/content/tags', $this->defData);
     }
 
-    public function repliesComment()
-    {
-        if (!$this->request->isAJAX()) return $this->failForbidden();
-
-        $valData = ['comID' => ['label' => 'Comment', 'rules' => 'required']];
-        if (!$this->validate($valData)) return $this->fail($this->validator->getErrors());
-
-        return $this->respond([
-            'display' => view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/replies', [
-                'replies' => $this->commonModel->lists('comments', '*', ['parent_id' => $this->request->getPost('comID')])
-            ])
-        ], 200);
-    }
-
     public function loadMoreComments()
     {
         if (!$this->request->isAJAX()) return $this->failForbidden();
