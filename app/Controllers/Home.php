@@ -118,55 +118,6 @@ class Home extends BaseController
         return view('maintenance', $this->defData);
     }
 
-    // --- Blog ---
-    public function blog()
-    {
-        $this->defData['seo'] = $this->ci4msseoLibrary->metaTags('Blog', 'blog listesi', 'blog', ['keywords' => ['blog listesi']]);
-
-        $perPage = 12;
-        $page = (int) $this->request->getUri()->getSegment(2, 1);
-        $offset = ($page - 1) * $perPage;
-
-        $this->defData['blogs'] = $this->commonModel->lists('blog', '*', ['isActive' => true], 'id ASC', $perPage, $offset);
-        $totalBlogs = $this->commonModel->count('blog', ['isActive' => true]);
-
-        $pager = \Config\Services::pager();
-        $this->defData['pager'] = $pager->makeLinks($page, $perPage, $totalBlogs, $this->defData['settings']->templateInfos->path, 2);
-        $this->defData['pager_info_text'] = (object) [
-            'total_products' => $totalBlogs,
-            'start' => ($page - 1) * $perPage + 1,
-            'end' => min($page * $perPage, $totalBlogs),
-        ];
-
-        $this->defData['dateI18n'] = new Time();
-        $modelTag = new AjaxModel();
-
-        foreach ($this->defData['blogs'] as $key => $blog) {
-            $this->defData['blogs'][$key]->tags = $modelTag->limitTags_ajax(['tags_pivot.piv_id' => $blog->id]);
-            $this->defData['blogs'][$key]->author = $this->commonModel->selectOne('users', ['id' => $blog->author], 'firstname,sirname');
-        }
-
-        $this->defData['categories'] = $this->commonModel->lists('categories', '*', ['isActive' => true]);
-
-        $this->defData['schema'] = $this->ci4msseoLibrary->ldPlusJson('Organization', [
-            'url' => site_url(implode('/', $this->request->getUri()->getSegments())),
-            'logo' => $this->defData['settings']->logo ?? '',
-            'name' => $this->defData['settings']->siteName ?? '',
-            'children' => [
-                'ContactPoint' => [
-                    'ContactPoint' => [
-                        'telephone' => $this->defData['settings']->company->phone ?? '',
-                        'contactType' => 'customer support'
-                    ]
-                ]
-            ],
-            'sameAs' => array_map(fn($sN) => $sN['link'] ?? '', (array)($this->defData['settings']->socialNetwork ?? []))
-        ]);
-
-        $this->defData['breadcrumbs'] = $this->commonLibrary->get_breadcrumbs('/blog/1', 'page');
-        return view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/list', $this->defData);
-    }
-
     // --- Tag Detail (original) ---
     public function tagList(string $seflink)
     {
