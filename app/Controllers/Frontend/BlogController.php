@@ -205,13 +205,20 @@ class BlogController extends BaseController
         $modelTag = new AjaxModel();
 
         foreach ($this->defData['blogs'] as $key => $blog) {
-            $this->defData['blogs'][$key]->tags = $modelTag->limitTags_ajax(['piv_id' => $blog->id]);
-            $this->defData['blogs'][$key]->author = $this->commonModel->selectOne('users', ['id' => $blog->author], 'firstname,sirname');
-        }
+        // Normalize SEO
+        $seo = !empty($blog->seo) ? json_decode($blog->seo, false) : (object) [];
+        if (!is_object($seo)) $seo = (object) [];
+        $this->defData['blogs'][$key]->seo = $seo;
+
+        // Tags & Author
+        $this->defData['blogs'][$key]->tags = $modelTag->limitTags_ajax(['piv_id' => $blog->id]);
+        $this->defData['blogs'][$key]->author = $this->commonModel->selectOne('users', ['id' => $blog->author], 'firstname,sirname');
+            }
 
         $this->defData['categories'] = $this->commonModel->lists('categories', '*', ['isActive' => true]);
         $this->defData['tagInfo'] = $this->commonModel->selectOne('tags', ['seflink' => $seflink]);
         $this->defData['breadcrumbs'] = $this->commonLibrary->get_breadcrumbs((int)$this->defData['tagInfo']->id, 'tag');
+        $this->defData['allTags'] = $this->commonModel->lists('tags', '*', [], 'tag ASC');
 
         return view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/tags', $this->defData);
     }
