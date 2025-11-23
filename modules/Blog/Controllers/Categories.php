@@ -6,12 +6,12 @@ use JasonGrimes\Paginator;
 
 class Categories extends \Modules\Backend\Controllers\BaseController
 {
-    public function index()
+    public function index(int $page = 1)
     {
         $totalItems = $this->commonModel->count('categories', []);
         $itemsPerPage = 20;
-        $currentPage = (int) $this->request->getUri()->getSegment(4, 1);
-        $urlPattern = '/backend/blogs/categories/(:num)';
+        $currentPage = $page < 1 ? 1 : $page;
+        $urlPattern = '/backend/categories/(:num)';
         $paginator = new Paginator($totalItems, $itemsPerPage, $currentPage, $urlPattern);
         $paginator->setMaxPagesToShow(5);
         $offset = ($currentPage - 1) * $itemsPerPage;
@@ -20,7 +20,6 @@ class Categories extends \Modules\Backend\Controllers\BaseController
         $this->defData['categories'] = $this->commonModel->lists('categories', '*', [], 'id ASC', $itemsPerPage, $offset);
         return view('Modules\Blog\Views\categories\list', $this->defData);
     }
-
     public function new()
     {
         if ($this->request->is('post')) {

@@ -29,9 +29,9 @@ $routes->get('blog/(:any)', 'Frontend\BlogController::blogDetail/$1');
 // Tags & Categories
 $routes->get('tag/(:any)', 'Frontend\BlogController::tagList/$1', ['as' => 'tag']);
 $routes->get('category/(:any)', 'Frontend\BlogController::category/$1', ['as' => 'category']);
-$routes->get('categories', 'Frontend\BlogController::browseCategories');
+$routes->get('categories', 'Frontend\BlogController::browseCategories', ['as' => 'frontend-categories']);
 $routes->get('categories/(:num)', 'Frontend\BlogController::browseCategories/$1');
-$routes->get('tags', 'Frontend\BlogController::browseTags');
+$routes->get('tags', 'Frontend\BlogController::browseTags', ['as' => 'frontend-tags']);
 $routes->get('tags/(:num)', 'Frontend\BlogController::browseTags/$1');
 
 // Auth

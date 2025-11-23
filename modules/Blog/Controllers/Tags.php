@@ -6,18 +6,19 @@ use JasonGrimes\Paginator;
 
 class Tags extends \Modules\Backend\Controllers\BaseController
 {
-    public function index()
+    public function index(int $page = 1)
     {
-        $totalItems = $this->commonModel->count('tags',[]);
+        $totalItems = $this->commonModel->count('tags', []);
         $itemsPerPage = 20;
-        $currentPage = $this->request->getUri()->getSegment(4, 1);
-        $urlPattern = '/backend/pages/(:num)';
+        $currentPage = $page < 1 ? 1 : $page;
+        $urlPattern = '/backend/tags/(:num)';
         $paginator = new Paginator($totalItems, $itemsPerPage, $currentPage, $urlPattern);
         $paginator->setMaxPagesToShow(5);
+        $offset = ($currentPage - 1) * $itemsPerPage;
+
         $this->defData['paginator'] = $paginator;
-        $bpk = ($this->request->getUri()->getSegment(4, 1) - 1) * $itemsPerPage;
-        $this->defData['tags']=$this->commonModel->lists('tags','*',[],'id ASC',$itemsPerPage,$bpk);
-        return view('Modules\Blog\Views\tags\list',$this->defData);
+        $this->defData['tags'] = $this->commonModel->lists('tags', '*', [], 'id ASC', $itemsPerPage, $offset);
+        return view('Modules\Blog\Views\tags\list', $this->defData);
     }
 
     public function create()
