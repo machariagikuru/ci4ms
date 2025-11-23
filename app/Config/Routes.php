@@ -102,8 +102,8 @@ $routes->post('search', 'Home::search', ['filter' => 'ci4ms', 'as' => 'search'])
 // Frontend Auth Routes (handled by main app routes.php)
 $routes->get('register', 'Frontend\AuthController::register');
 $routes->post('register', 'Frontend\AuthController::registerPost');
-$routes->get('login', 'Home::login');
-$routes->post('login', 'Home::loginPost');
+$routes->get('login', 'Frontend\AuthController::login');
+$routes->post('login', 'Frontend\AuthController::loginPost');
 $routes->get('logout', 'Home::logout');
 $routes->get('forgot-password', 'Home::forgotPassword');
 $routes->post('forgot-password', 'Home::forgotPasswordPost');
