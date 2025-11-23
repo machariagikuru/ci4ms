@@ -104,12 +104,11 @@ $routes->get('register', 'Frontend\AuthController::register');
 $routes->post('register', 'Frontend\AuthController::registerPost');
 $routes->get('login', 'Frontend\AuthController::login');
 $routes->post('login', 'Frontend\AuthController::loginPost');
-$routes->get('logout', 'Home::logout');
-$routes->get('forgot-password', 'Home::forgotPassword');
-$routes->post('forgot-password', 'Home::forgotPasswordPost');
-$routes->get('reset-password/(:any)', 'Home::resetPassword/$1');
-$routes->post('reset-password/(:any)', 'Home::resetPasswordPost/$1');
-
+$routes->get('logout', 'Frontend\AuthController::logout');
+$routes->get('forgot-password', 'Frontend\AuthController::forgotPassword');
+$routes->post('forgot-password', 'Frontend\AuthController::forgotPasswordPost');
+$routes->get('reset-password/(:any)', 'Frontend\AuthController::resetPassword/$1');
+$routes->post('reset-password/(:any)', 'Frontend\AuthController::resetPasswordPost/$1');
 // My Account
 $routes->group('my-account', ['filter' => 'auth'], function ($routes) {
     $routes->get('', 'Home::dashboard');

@@ -125,4 +125,108 @@ class AuthController extends BaseController
 
         return redirect()->back()->withInput()->with('error', $authLib->error() ?? 'Invalid credentials.');
     }
+
+    public function forgotPassword()
+    {
+        $authLib = new AuthLibrary();
+        if ($authLib->isLoggedIn()) {
+            return redirect()->to('/');
+        }
+        return view('auth/forgot', $this->defData);
+    }
+
+    public function forgotPasswordPost()
+    {
+        $authLib = new AuthLibrary();
+        if ($authLib->isLoggedIn()) {
+            return redirect()->to('/');
+        }
+
+        $rules = ['email' => 'required|valid_email'];
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $email = $this->request->getPost('email');
+        $user = $this->commonModel->selectOne('users', ['email' => $email, 'group_id !=' => 1]);
+
+        if (!$user) {
+            return redirect()->back()->with('error', lang('Auth.forgotNoUser'));
+        }
+
+        $token = $authLib->generateActivateHash();
+        $this->commonModel->edit('users', [
+            'reset_hash' => $token,
+            'reset_expires' => date('Y-m-d H:i:s', time() + 3600)
+        ], ['id' => $user->id]);
+
+        $commonLibrary = new CommonLibrary();
+        $mailResult = $commonLibrary->phpMailer(
+            'noreply@' . $_SERVER['HTTP_HOST'],
+            'noreply@' . $_SERVER['HTTP_HOST'],
+            ['mail' => $email],
+            'Password Reset',
+            lang('Auth.membershipPasswordReset'),
+            "Click to reset your password: " . site_url("reset-password/$token")
+        );
+
+        if ($mailResult === true) {
+            return redirect()->to('/login')->with('message', lang('Auth.forgotEmailSent'));
+        }
+
+        return redirect()->back()->with('error', lang('Auth.unknownError'));
+    }
+
+    public function resetPassword(string $token)
+    {
+        $user = $this->commonModel->selectOne('users', ['reset_hash' => $token]);
+        if (!$user || strtotime($user->reset_expires) < time()) {
+            return redirect()->to('/login')->with('error', lang('Auth.resetTokenExpired'));
+        }
+
+        return view('auth/reset', array_merge($this->defData, ['token' => $token]));
+    }
+
+    public function resetPasswordPost(string $token)
+    {
+        $rules = [
+            'email' => 'required|valid_email',
+            'password' => 'required|min_length[6]',
+            'pass_confirm' => 'required|matches[password]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $email = $this->request->getPost('email');
+        $user = $this->commonModel->selectOne('users', [
+            'email' => $email,
+            'reset_hash' => $token
+        ]);
+
+        if (!$user) {
+            return redirect()->back()->with('error', lang('Auth.forgotNoUser'));
+        }
+
+        if (strtotime($user->reset_expires) < time()) {
+            return redirect()->back()->with('error', lang('Auth.resetTokenExpired'));
+        }
+
+        $authLib = new AuthLibrary();
+        $this->commonModel->edit('users', [
+            'password_hash' => $authLib->setPassword($this->request->getPost('password')),
+            'reset_hash' => null,
+            'reset_expires' => null
+        ], ['id' => $user->id]);
+
+        return redirect()->to('/login')->with('message', lang('Auth.resetSuccess'));
+    }
+
+    public function logout()
+    {
+        $authLib = new AuthLibrary();
+        $authLib->logout();
+        return redirect()->to('/');
+    }
 }
