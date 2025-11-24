@@ -8,7 +8,17 @@ $routes->group('backend', ['namespace' => 'Modules\Backend\Controllers'], functi
     // Dashboard
     $routes->get('/', 'Backend::index', ['as' => 'backend', 'role' => 'read']);
     $routes->get('403', 'Errors::error_403', ['as' => '403']);
-
+    
+    // Subjects
+    $routes->group('subjects', function ($routes) {
+        $routes->get('', 'SubjectsController::index', ['as' => 'subjects', 'role' => 'read']);
+        $routes->get('new', 'SubjectsController::create', ['as' => 'subjectCreate', 'role' => 'create']);
+        $routes->post('new', 'SubjectsController::store', ['role' => 'create']);
+        $routes->get('edit/(:num)', 'SubjectsController::edit/$1', ['as' => 'subjectEdit', 'role' => 'update']);
+        $routes->post('edit/(:num)', 'SubjectsController::update/$1', ['role' => 'update']);
+        $routes->get('delete/(:num)', 'SubjectsController::delete/$1', ['as' => 'subjectDelete', 'role' => 'delete']);
+    });
+    
     // Categories (from Blog module)
     $routes->group('categories', function ($routes) {
         $routes->get('', '\Modules\Blog\Controllers\Categories::index/1', ['as' => 'categories', 'role' => 'read']); // ← no number → page 1
