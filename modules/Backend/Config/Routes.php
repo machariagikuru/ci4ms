@@ -41,6 +41,16 @@ $routes->group('backend', ['namespace' => 'Modules\Backend\Controllers'], functi
         $routes->get('', 'ExamPaperController::index', ['as' => 'examPapers', 'role' => 'read']);
     });
 
+    // Notes
+    $routes->group('notes', function ($routes) {
+        $routes->get('', 'NotesController::index', ['as' => 'notes', 'role' => 'read']);
+        $routes->get('upload', 'NotesController::create', ['as' => 'noteUpload', 'role' => 'create']);
+        $routes->post('upload', 'NotesController::store', ['role' => 'create']);
+        $routes->get('edit/(:num)', 'NotesController::edit/$1', ['as' => 'noteEdit', 'role' => 'update']);
+        $routes->post('edit/(:num)', 'NotesController::update/$1', ['role' => 'update']);
+        $routes->get('delete/(:num)', 'NotesController::delete/$1', ['as' => 'noteDelete', 'role' => 'delete']);
+    });
+
     // Other Pages
     $routes->post('tagify', 'AJAX::limitTags_ajax', ['as' => 'tagify', 'role' => 'delete']);
     $routes->post('checkSeflink', 'AJAX::autoLookSeflinks', ['as' => 'checkSeflink', 'role' => 'delete']);

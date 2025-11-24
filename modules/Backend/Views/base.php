@@ -95,6 +95,30 @@
                                 </li>
                             </ul>
                         </li>
+                        <!-- Notes Module -->
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-sticky-note"></i>
+                                <p>
+                                    Notes
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="<?= route_to('noteUpload') ?>" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Upload Note</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?= route_to('notes') ?>" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Manage Notes</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         <?php function navigation($navigation, $uri, $child = null)
                         {
                             foreach ($navigation as $nav) :

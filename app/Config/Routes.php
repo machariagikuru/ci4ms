@@ -30,6 +30,10 @@ $routes->get('blog/(:any)', 'Frontend\BlogController::blogDetail/$1');
 $routes->get('exam-papers', 'ExamPapersController::index');
 $routes->get('exam-papers/download/(:num)', 'ExamPapersController::download/$1');
 
+// Public Notes
+$routes->get('notes', 'NotesController::index');
+$routes->get('notes/download/(:num)', 'NotesController::download/$1');
+
 // Tags & Categories
 $routes->get('tag/(:any)', 'Frontend\BlogController::tagList/$1', ['as' => 'tag']);
 $routes->get('category/(:any)', 'Frontend\BlogController::category/$1', ['as' => 'category']);
