@@ -132,6 +132,17 @@ class BlogController extends BaseController
 
         $this->defData['breadcrumbs'] = $this->commonLibrary->get_breadcrumbs((int)$this->defData['infos']->id, 'blog');
         return view('templates/' . ($this->defData['settings']->templateInfos->path ?? 'default') . '/blog/post', $this->defData);
+    
+
+        $data['similarPosts'] = $this->commonModel->db
+        ->table('blog')
+        ->select('id, title, seflink, created_at')
+        ->where('id !=', $currentBlogId)
+        ->where('isActive', 1)
+        ->orderBy('RAND()') // or use tag/category matching for true similarity
+        ->limit(5)
+        ->get()
+        ->getResult();
     }
 
     public function blog()
