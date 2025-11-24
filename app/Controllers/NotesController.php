@@ -25,12 +25,12 @@ class NotesController extends Controller
                 notes.file_path,
                 notes.created_at,
                 subjects.name as subject_name,
-                note_categories.name as category_name,
-                note_tags.name as tag_name
+                categories.title as category_name,
+                tags.tag as tag_name
             ')
             ->join('subjects', 'subjects.id = notes.subject_id')
-            ->join('note_categories', 'note_categories.id = notes.category_id', 'left')
-            ->join('note_tags', 'note_tags.id = notes.tag_id', 'left')
+            ->join('categories', 'categories.id = notes.category_id', 'left')
+            ->join('tags', 'tags.id = notes.tag_id', 'left')
             ->orderBy('notes.created_at', 'DESC');
 
         // Apply filters
@@ -48,8 +48,8 @@ class NotesController extends Controller
 
         // Load filter options
         $subjects = $db->table('subjects')->orderBy('name', 'ASC')->get()->getResult();
-        $categories = $db->table('note_categories')->orderBy('name', 'ASC')->get()->getResult();
-        $tags = $db->table('note_tags')->orderBy('name', 'ASC')->get()->getResult();
+        $categories = $db->table('categories')->select('id, title as name')->orderBy('title', 'ASC')->get()->getResult();
+        $tags = $db->table('tags')->select('id, tag as name')->orderBy('tag', 'ASC')->get()->getResult();
 
         return view('notes/list', [
             'notes'      => $notes,

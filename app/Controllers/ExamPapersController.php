@@ -23,34 +23,32 @@ class ExamPapersController extends Controller
                 exam_papers.description,
                 exam_papers.file_path,
                 exam_papers.created_at,
-                subjects.name as subject_name
+                subjects.name as subject_name,
+                categories.title as category_name,
+                tags.tag as tag_name
             ')
             ->join('subjects', 'subjects.id = exam_papers.subject_id')
+            ->join('categories', 'categories.id = exam_papers.category_id', 'left')
+            ->join('tags', 'tags.id = exam_papers.tag_id', 'left')
             ->orderBy('exam_papers.created_at', 'DESC');
 
-        // Apply subject filter
+        // Apply filters
         if ($subjectId && is_numeric($subjectId)) {
             $builder->where('exam_papers.subject_id', $subjectId);
         }
-
-        // Apply category filter
         if ($categoryId && is_numeric($categoryId)) {
-            $builder->join('exam_paper_categories', 'exam_paper_categories.exam_paper_id = exam_papers.id')
-                    ->where('exam_paper_categories.category_id', $categoryId);
+            $builder->where('exam_papers.category_id', $categoryId);
         }
-
-        // Apply tag filter
         if ($tagId && is_numeric($tagId)) {
-            $builder->join('exam_paper_tags', 'exam_paper_tags.exam_paper_id = exam_papers.id')
-                    ->where('exam_paper_tags.tag_id', $tagId);
+            $builder->where('exam_papers.tag_id', $tagId);
         }
 
         $examPapers = $builder->get()->getResult();
 
-        // Load filter options for dropdowns
+        // Load filter options
         $subjects = $db->table('subjects')->orderBy('name', 'ASC')->get()->getResult();
-        $categories = $db->table('exam_categories')->orderBy('name', 'ASC')->get()->getResult();
-        $tags = $db->table('exam_tags')->orderBy('name', 'ASC')->get()->getResult();
+        $categories = $db->table('categories')->select('id, title as name')->orderBy('title', 'ASC')->get()->getResult();
+        $tags = $db->table('tags')->select('id, tag as name')->orderBy('tag', 'ASC')->get()->getResult();
 
         return view('exam_papers/list', [
             'examPapers' => $examPapers,

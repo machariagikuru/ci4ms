@@ -60,7 +60,11 @@
                         <div class="card-body">
                             <h5 class="card-title"><?= esc($paper->title) ?></h5>
                             <p class="card-text">
-                                <small class="text-muted">Subject: <?= esc($paper->subject_name) ?></small><br>
+                                <small class="text-muted">
+                                    <?= esc($paper->subject_name) ?>
+                                    <?php if ($paper->category_name): ?> • <?= esc($paper->category_name) ?><?php endif ?>
+                                    <?php if ($paper->tag_name): ?> • <?= esc($paper->tag_name) ?><?php endif ?>
+                                </small><br>
                                 <?= esc($paper->description ?? '') ?>
                             </p>
                         </div>
