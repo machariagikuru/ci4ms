@@ -4,11 +4,22 @@
 <?= $this->include('templates/default/partials/_features') ?>
 <?= $this->include('templates/default/partials/_latest_posts') ?>
 
-<div class="text-center mb-4">
-    <a href="<?= site_url('categories') ?>" class="btn btn-outline-primary me-2">Browse Categories</a>
-    <a href="<?= site_url('tags') ?>" class="btn btn-outline-primary">Browse Tags</a>
+<div class="py-4 mb-4" style="background-color: #074C87; border-radius: 0.5rem;">
+    <div class="text-center">
+        <a href="<?= site_url('categories') ?>" 
+           class="btn me-2"
+           style="background-color: #e9ff4e; color: #074C87; font-weight: 500; border: none; padding: 0.5rem 1.25rem; border-radius: 0.375rem;">
+            Browse Categories
+        </a>
+        <a href="<?= site_url('tags') ?>" 
+           class="btn"
+           style="background-color: #e9ff4e; color: #074C87; font-weight: 500; border: none; padding: 0.5rem 1.25rem; border-radius: 0.375rem;">
+            Browse Tags
+        </a>
+    </div>
 </div>
+
 <?= $this->include('templates/default/partials/_categories') ?>
 <?= $this->include('templates/default/partials/_tags') ?>
-<?= $this->include('templates/default/partials/_testimonials') ?>
+<?= $this->include('templates/default/partials/_testimonials', ['testimonials' => $testimonials ?? []]) ?>
 <?= $this->endSection() ?>

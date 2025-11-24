@@ -29,6 +29,25 @@ class PageController extends BaseController
         $this->defData['categories'] = $this->commonModel->lists('categories', '*', ['isActive' => true], 'title ASC');
         $this->defData['tags'] = $this->commonModel->lists('tags', '*', [], 'tag ASC', 30); // top 30 tags
 
+        // ➕ Add static testimonials (not in DB) — inserted without removing existing code
+        $this->defData['testimonials'] = [
+            [
+                'name'    => 'Jane Muthoni',
+                'role'    => 'Teacher, CBC Coordinator',
+                'content' => 'StrandNotes has transformed how I share revision materials with my students. It\'s intuitive and saves hours every week!',
+            ],
+            [
+                'name'    => 'Kevin Omondi',
+                'role'    => 'Grade 10 Student',
+                'content' => 'I found past papers and notes for all my subjects in one place. My grades have improved dramatically!',
+            ],
+            [
+                'name'    => 'Grace Wanjiru',
+                'role'    => 'Form 3 Student',
+                'content' => 'The exam papers helped me prepare confidently for my midterms. Thank you StrandNotes!'
+            ]
+        ];
+
         // SEO
         $this->defData['seo'] = $this->ci4msseoLibrary->metaTags(
             'Home Page',
@@ -103,5 +122,5 @@ class PageController extends BaseController
         }
         return view('maintenance', $this->defData);
     }
-}
 
+}

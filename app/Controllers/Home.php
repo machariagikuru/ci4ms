@@ -46,4 +46,25 @@ class Home extends BaseController
             'pages' => $pages,
         ]);
     }
+
+    public function index()
+{
+    $data['testimonials'] = [
+        [
+            'name'    => 'Jane Muthoni',
+            'role'    => 'Teacher, CBC Coordinator',
+            'content' => 'StrandNotes has transformed how I share revision materials with my students. It\'s intuitive and saves hours every week!',
+            'avatar'  => base_url('uploads/avatars/jane.jpg') // optional
+        ],
+        [
+            'name'    => 'Kevin Omondi',
+            'role'    => 'Grade 10 Student',
+            'content' => 'I found past papers and notes for all my subjects in one place. My grades have improved dramatically!',
+            // no avatar → will show initials
+        ],
+        // Add more as needed
+    ];
+
+    return view('home', $data);
+}
 }

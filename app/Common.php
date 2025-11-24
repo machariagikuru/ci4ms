@@ -120,22 +120,55 @@ if (!function_exists('seflink')) {
 if (!function_exists('menu')) {
     function menu($category, $parent = null)
     {
+        // Get current URL segment for active state
+        $currentURI = service('uri')->getPath();
+        $currentSegments = explode('/', trim($currentURI, '/'));
+
         foreach ($category as $menu) {
             if ($menu->parent == $parent) {
-                echo '<li class="';
-                if (empty($menu->parent)) echo 'nav-item';
-                if ((bool)$menu->hasChildren === true) echo ' dropdown';
-                echo '">';
-                echo '<a class="';
-                if (empty($menu->parent)) echo 'nav-link';
-                else echo 'dropdown-item';
-                if ((bool)$menu->hasChildren === true) echo ' dropdown-toggle';
-                echo '" href="' . site_url($menu->seflink) . '"';
-                if ((bool)$menu->hasChildren === true) echo ' role="button" data-bs-toggle="dropdown" aria-expanded="false"';
-                echo '>' . $menu->title . '</a>';
-                if ((bool)$menu->hasChildren === true) echo '<ul class="dropdown-menu dropdown-menu-end">';
-                menu($category, $menu->id);
-                if ((bool)$menu->hasChildren === true) echo '</ul>';
+                // Build menu link
+                $link = site_url($menu->seflink);
+                $linkPath = trim($menu->seflink, '/');
+
+                // Check if active: match first segment or full path
+                $isActive = false;
+                if (!empty($linkPath)) {
+                    $linkSegments = explode('/', $linkPath);
+                    $firstLinkSegment = $linkSegments[0] ?? '';
+                    $firstCurrentSegment = $currentSegments[0] ?? '';
+                    if ($firstLinkSegment === $firstCurrentSegment) {
+                        $isActive = true;
+                    }
+                } else {
+                    // Home page
+                    if (empty($currentSegments[0])) {
+                        $isActive = true;
+                    }
+                }
+
+                echo '<li class="nav-item">';
+                echo '<a class="nav-link" href="' . $link . '" style="';
+                // Base style
+                echo 'color: white; font-weight: 500; padding: 0.5rem 1rem; margin: 0 0.25rem; border-radius: 4px;';
+                // Hover effect (via :hover not possible inline, so use JS fallback or rely on Bootstrap)
+                // But we CAN style active state
+                if ($isActive) {
+                    echo 'background-color: rgba(255,255,255,0.15); box-shadow: inset 0 -2px 0 #e9ff4e;';
+                }
+                echo '" ';
+                // Optional: add title for tooltip
+                echo 'onmouseover="this.style.backgroundColor=\'rgba(255,255,255,0.1)\'" ';
+                echo 'onmouseout="this.style.backgroundColor=\'' . ($isActive ? 'rgba(255,255,255,0.15)' : 'transparent') . '\'"';
+                echo '>';
+                echo esc($menu->title);
+                echo '</a>';
+
+                // Recursion for children
+                if ((bool)$menu->hasChildren === true) {
+                    echo '<ul class="dropdown-menu dropdown-menu-end" style="background-color: #074C87; border: 1px solid #1a66a3;">';
+                    menu($category, $menu->id);
+                    echo '</ul>';
+                }
                 echo '</li>';
             }
         }
