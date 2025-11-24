@@ -21,6 +21,10 @@ $routes->set404Override('App\Controllers\Errors::error404');
 $routes->get('/', 'Frontend\PageController::home', ['as' => 'home']);
 $routes->get('maintenance-mode', 'Frontend\PageController::maintenanceMode', ['as' => 'maintenance-mode']);
 
+// Public Subjects
+$routes->get('subjects', 'SubjectsController::index');
+$routes->get('subject/(:num)', 'SubjectsController::show/$1');
+
 // Blog
 $routes->get('blog', 'Frontend\BlogController::blog');
 $routes->get('blog/(:num)', 'Frontend\BlogController::blog/$1');
