@@ -97,6 +97,17 @@
                         </div>
                     </div>
                     <div class="col-md-12 form-group">
+                        <label for=""><?=lang('Blog.subject')?></label>
+                        <select class="form-control" id="subject_id" name="subject_id">
+                            <option value=""><?=lang('Blog.selectSubject')?></option>
+                            <?php foreach ($subjects as $subject): ?>
+                                <option value="<?= $subject->id ?>" <?= set_select('subject_id', $subject->id) ?>>
+                                    <?= esc($subject->name) ?>
+                                </option>
+                            <?php endforeach ?>
+                        </select>
+                    </div>
+                    <div class="col-md-12 form-group">
                         <label for=""><?=lang('Blog.categories')?></label>
                         <select name="categories[]" id="" class="form-control select2bs4" multiple="multiple" data-placeholder="<?=lang('Backend.selectOption',[lang('Blog.categories')])?>">
                             <?php foreach($categories as $category): ?>
@@ -105,8 +116,7 @@
                         </select>
                     </div>
 
-                    <!-- ✅ REMOVED: Cover image section (URL, preview, select button, dimensions) -->
-
+                    <!-- SEO Fields (No Images) -->
                     <div class="form-group col-md-12">
                         <label for=""><?=lang('Backend.seoDescription')?></label>
                         <textarea class="form-control" name="description"></textarea>

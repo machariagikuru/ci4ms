@@ -66,6 +66,7 @@ class Blog extends \Modules\Backend\Controllers\BaseController
                 'categories' => ['label' => lang('Blog.categories'), 'rules' => 'required'],
                 'author' => ['label' => lang('Blog.author'), 'rules' => 'required'],
                 'created_at' => ['label' => lang('Backend.createdAt'), 'rules' => 'required|valid_date[d.m.Y H:i:s]'],
+                'subject_id' => ['label' => lang('Blog.subject'), 'rules' => 'permit_empty|is_natural_no_zero'],
             ];
 
             if (!empty($this->request->getPost('pageimg'))) {
@@ -99,6 +100,7 @@ class Blog extends \Modules\Backend\Controllers\BaseController
                 'seflink' => $this->request->getPost('seflink'),
                 'inMenu' => false,
                 'author' => $this->request->getPost('author'),
+                'subject_id' => $this->request->getPost('subject_id') ?: null, // ← ADDED
                 'created_at' => date('Y-m-d H:i:s', strtotime($this->request->getPost('created_at'))),
             ];
 
@@ -139,6 +141,10 @@ class Blog extends \Modules\Backend\Controllers\BaseController
             return redirect()->back()->withInput()->with('error', lang('Backend.created', [$data['title']]));
         }
 
+        // Load subjects for the form
+        $db = \Config\Database::connect();
+        $this->defData['subjects'] = $db->table('subjects')->orderBy('name', 'ASC')->get()->getResult();
+
         $this->defData['categories'] = $this->commonModel->lists('categories');
         $this->defData['authors'] = $this->commonModel->lists('users', '*', ['status' => 'active']);
 
@@ -162,6 +168,7 @@ class Blog extends \Modules\Backend\Controllers\BaseController
                 'categories' => ['label' => lang('Blog.categories'), 'rules' => 'required'],
                 'author' => ['label' => lang('Blog.author'), 'rules' => 'required'],
                 'created_at' => ['label' => lang('Backend.createdAt'), 'rules' => 'required|valid_date[d.m.Y H:i:s]'],
+                'subject_id' => ['label' => lang('Blog.subject'), 'rules' => 'permit_empty|is_natural_no_zero'],
             ];
 
             if (!empty($this->request->getPost('pageimg'))) {
@@ -197,6 +204,7 @@ class Blog extends \Modules\Backend\Controllers\BaseController
                 'isActive' => (bool) $this->request->getPost('isActive'),
                 'seflink' => $this->request->getPost('seflink'),
                 'author' => $this->request->getPost('author'),
+                'subject_id' => $this->request->getPost('subject_id') ?: null, // ← ADDED
                 'created_at' => date('Y-m-d H:i:s', strtotime($this->request->getPost('created_at'))),
             ];
 
@@ -235,6 +243,10 @@ class Blog extends \Modules\Backend\Controllers\BaseController
 
             return redirect()->back()->withInput()->with('error', lang('Backend.notUpdated', [$data['title']]));
         }
+
+        // Load subjects for the form
+        $db = \Config\Database::connect();
+        $this->defData['subjects'] = $db->table('subjects')->orderBy('name', 'ASC')->get()->getResult();
 
         $tags = $this->model->limitTags_ajax(['tags_pivot.tagType' => 'blogs', 'tags_pivot.piv_id' => $id]);
         $formattedTags = [];

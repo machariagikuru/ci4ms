@@ -105,6 +105,17 @@
                         </div>
                     </div>
                     <div class="col-md-12 form-group">
+                        <label for=""><?= lang('Blog.subject') ?></label>
+                        <select class="form-control" id="subject_id" name="subject_id">
+                            <option value=""><?= lang('Blog.selectSubject') ?></option>
+                            <?php foreach ($subjects as $subject): ?>
+                                <option value="<?= $subject->id ?>" <?= set_select('subject_id', $subject->id, $subject->id == ($infos->subject_id ?? null)) ?>>
+                                    <?= esc($subject->name) ?>
+                                </option>
+                            <?php endforeach ?>
+                        </select>
+                    </div>
+                    <div class="col-md-12 form-group">
                         <label for=""><?= lang('Blog.categories') ?></label>
                         <select name="categories[]" id="" class="form-control select2bs4" multiple="multiple"
                                 data-placeholder="<?=lang('Backend.selectOption',[lang('Blog.categories')])?>">
@@ -127,33 +138,8 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="form-group col-md-12 row">
-                        <div class="col-md-12 form-group">
-                            <label for=""><?= lang('Backend.coverImage') ?></label>
-                            <img src="<?= (!empty($infos->seo->coverImage))?$infos->seo->coverImage:'' ?>" alt="" class="pageimg img-fluid">
-                        </div>
-                        <div class="col-md-12 form-group">
-                            <label for=""><?= lang('Backend.coverImgURL') ?></label>
-                            <input type="text" name="pageimg" class="form-control pageimg-input"
-                                   placeholder="Görsel URL" value="<?= (!empty($infos->seo->coverImage))?$infos->seo->coverImage:'' ?>">
-                        </div>
-                        <div class="col-md-12 row form-group">
-                            <div class="col-sm-6">
-                                <label for=""><?= lang('Backend.coverImgWith') ?></label>
-                                <input type="number" name="pageIMGWidth" class="form-control" id="pageIMGWidth"
-                                       readonly value="<?= (!empty($infos->seo->IMGWidth))?$infos->seo->IMGWidth:'' ?>">
-                            </div>
-                            <div class="col-sm-6">
-                                <label for=""><?= lang('Backend.coverImgHeight') ?></label>
-                                <input type="number" name="pageIMGHeight" class="form-control" id="pageIMGHeight"
-                                       readonly value="<?= (!empty($infos->seo->IMGHeight))?$infos->seo->IMGHeight:'' ?>">
-                            </div>
-                        </div>
-                        <div class="col-md-12 form-group">
-                            <button type="button"
-                                    class="pageIMG btn btn-info w-100"><?= lang('Backend.selectCoverImg') ?></button>
-                        </div>
-                    </div>
+
+                    <!-- SEO Fields (No Images) -->
                     <div class="form-group col-md-12">
                         <label for=""><?= lang('Backend.seoDescription') ?></label>
                         <textarea class="form-control" name="description"><?= (!empty($infos->seo->description))?$infos->seo->description:'' ?></textarea>
