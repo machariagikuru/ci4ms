@@ -26,6 +26,10 @@ $routes->get('blog', 'Frontend\BlogController::blog');
 $routes->get('blog/(:num)', 'Frontend\BlogController::blog/$1');
 $routes->get('blog/(:any)', 'Frontend\BlogController::blogDetail/$1');
 
+// Public Exam Papers
+$routes->get('exam-papers', 'ExamPapersController::index');
+$routes->get('exam-papers/download/(:num)', 'ExamPapersController::download/$1');
+
 // Tags & Categories
 $routes->get('tag/(:any)', 'Frontend\BlogController::tagList/$1', ['as' => 'tag']);
 $routes->get('category/(:any)', 'Frontend\BlogController::category/$1', ['as' => 'category']);

@@ -81,4 +81,18 @@ class Modules extends BaseModules
         'routes',
         'services',
     ];
+
+    /**
+     * --------------------------------------------------------------------------
+     * Additional Module Locations
+     * --------------------------------------------------------------------------
+     *
+     * Allows loading modules from directories outside APPPATH.
+     *
+     * @var list<string>
+     */
+    public $paths = [
+        APPPATH . 'Modules',
+        ROOTPATH . 'modules',
+    ];
 }

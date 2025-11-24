@@ -59,4 +59,9 @@ class View extends BaseView
      * @var list<class-string<ViewDecoratorInterface>>
      */
     public array $decorators = [];
+
+    public array $paths = [
+        APPPATH . 'Views',        // Default app views
+        ROOTPATH . 'modules',     // Enable module views
+    ];
 }

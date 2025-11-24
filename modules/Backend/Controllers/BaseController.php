@@ -29,7 +29,11 @@ class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = ['Modules\Backend\Helpers\ci4ms'];
+    protected $helpers = [
+        'Modules\Backend\Helpers\ci4ms',
+        'form',
+        'url',       // also needed for `site_url()`, `base_url()`
+    ];
 
     /**
      * Constructor.

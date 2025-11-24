@@ -30,6 +30,17 @@ $routes->group('backend', ['namespace' => 'Modules\Backend\Controllers'], functi
         $routes->get('delete/(:num)', '\Modules\Blog\Controllers\Tags::delete/$1', ['as' => 'tagDelete', 'role' => 'delete']);
     });
 
+     // Exam Papers
+    $routes->group('exam-papers', function ($routes) {
+        $routes->get('upload', 'ExamPaperController::create', ['as' => 'examPaperUpload', 'role' => 'create']);
+        $routes->post('upload', 'ExamPaperController::store', ['role' => 'create']);
+        $routes->get('edit/(:num)', 'ExamPaperController::edit/$1', ['as' => 'examPaperEdit', 'role' => 'update']);
+        $routes->post('edit/(:num)', 'ExamPaperController::update/$1', ['role' => 'update']);
+        $routes->get('delete/(:num)', 'ExamPaperController::delete/$1', ['as' => 'examPaperDelete', 'role' => 'delete']);
+
+        $routes->get('', 'ExamPaperController::index', ['as' => 'examPapers', 'role' => 'read']);
+    });
+
     // Other Pages
     $routes->post('tagify', 'AJAX::limitTags_ajax', ['as' => 'tagify', 'role' => 'delete']);
     $routes->post('checkSeflink', 'AJAX::autoLookSeflinks', ['as' => 'checkSeflink', 'role' => 'delete']);

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noimageindex, nofollow, nosnippet">
 
-    <title>Kun-CMS/ERP | <?= $this->renderSection('title') ?> - <?= getGitVersion() ?></title>
+    <title>StrandNotes| <?= $this->renderSection('title') ?> - Admin </title>
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -71,6 +71,30 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column nav-flat nav-child-indent"
                         data-widget="treeview" role="menu" data-accordion="false">
+                        <!-- Exams Module -->
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-file-alt"></i>
+                                <p>
+                                    Exams
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="<?= route_to('examPaperUpload') ?>" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Upload Paper</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?= route_to('examPapers') ?>" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Manage Papers</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         <?php function navigation($navigation, $uri, $child = null)
                         {
                             foreach ($navigation as $nav) :
