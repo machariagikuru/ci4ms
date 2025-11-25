@@ -77,7 +77,6 @@ class AuthLibrary
         $this->recordLoginAttempt($this->user->email, true);
 
         session()->set([
-            'redirect_url' => $groupSefLink->seflink,
             $this->config->logged_in => $this->user->id,
             'group_id' => $this->user->group_id
         ]);
@@ -129,12 +128,7 @@ class AuthLibrary
         if ($userID = session($this->config->logged_in)) {
             if ($this->user === null) {
                 $this->user = $this->commonModel->selectOne($this->config->userTable, ['id' => $userID]);
-            }
-            if ($this->user && session()->get('redirect_url') == null) {
-                $groupSefLink = $this->commonModel->selectOne('auth_groups', ['id' => $this->user->group_id], 'seflink');
-                if ($groupSefLink) {
-                    session()->set('redirect_url', $groupSefLink->seflink);
-                }
+            
             }
             return $this->user !== null;
         }
