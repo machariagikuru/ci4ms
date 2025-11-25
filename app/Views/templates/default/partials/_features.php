@@ -40,7 +40,7 @@
                     </div>
 
                     <div class="col h-100">
-                        <a href="<?= base_url('dashboard') ?>" class="text-decoration-none" style="color: inherit;">
+                        <a href="<?= base_url('my-account') ?>" class="text-decoration-none" style="color: inherit;">
                             <div class="rounded-3 mb-3 d-flex align-items-center justify-content-center" style="width: 4rem; height: 4rem; background-color: #e9f2ff;">
                                 <i class="bi bi-speedometer2" style="font-size: 1.8rem; color: #074C87;"></i>
                             </div>
