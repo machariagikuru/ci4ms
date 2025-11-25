@@ -1,24 +1,28 @@
-<!-- Categories widget-->
-<div class="card mb-4">
-    <div class="card-header">Categories</div>
+<!-- Categories widget -->
+<div class="card mb-4 border-0 shadow-sm" style="border-radius: 0.5rem; background-color: #fff;">
+    <div class="card-header" style="background-color: #074C87; color: white; font-weight: 600; padding: 0.75rem 1rem; border-radius: 0.5rem 0.5rem 0 0;">
+        Categories
+    </div>
     <div class="card-body">
         <div class="row">
-            <?php $c = 0;
-            foreach ($categories as $category):
-                if ($c == 0):?>
-                    <div class="col-sm-6">
+            <?php 
+            $chunks = array_chunk($categories ?? [], 3); // Split into groups of 3
+            foreach ($chunks as $chunk): 
+            ?>
+                <div class="col-sm-6">
                     <ul class="list-unstyled mb-0">
-                <?php endif; ?>
-                <li>
-                    <a href="<?= site_url('category/' . $category->seflink) ?>"><?= esc($category->title) ?></a>
-                </li>
-                <?php if ($c == 0): ?>
-                </ul>
+                        <?php foreach ($chunk as $category): ?>
+                            <li class="mb-2">
+                                <a href="<?= site_url('category/' . esc($category->seflink)) ?>" 
+                                   class="text-decoration-none" 
+                                   style="color: #074C87; font-weight: 500; transition: color 0.15s;">
+                                    <?= esc($category->title) ?>
+                                </a>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
                 </div>
-            <?php endif;
-                $c++;
-                if ($c == 3) $c = 0;
-            endforeach; ?>
+            <?php endforeach; ?>
         </div>
     </div>
 </div>

@@ -3,22 +3,37 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow">
-                <div class="card-header text-center">
-                    <h4><?= lang('Auth.forgotPassword') ?></h4>
+            <div class="card border-0 shadow-sm" style="border-radius: 0.5rem; background-color: #e6f0fa;">
+                <div class="card-header text-center" style="background-color: #074C87; color: white; font-weight: 600; padding: 1.25rem; border-radius: 0.5rem 0.5rem 0 0;">
+                    <h4 class="mb-0" style="font-size: 1.25rem;"><?= lang('Auth.forgotPassword') ?></h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="padding: 1.5rem;">
                     <?= view('auth/_message_block') ?>
                     <form method="post" action="<?= site_url('forgot-password') ?>">
                         <?= csrf_field() ?>
                         <div class="mb-3">
-                            <label class="form-label"><?= lang('Auth.email') ?></label>
-                            <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+                            <label class="form-label fw-medium" style="color: #074C87;"><?= lang('Auth.email') ?></label>
+                            <input type="email" 
+                                   name="email" 
+                                   class="form-control" 
+                                   placeholder="you@example.com" 
+                                   required
+                                   style="border: 1px solid #cbd5e1; border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 0.95rem;">
                         </div>
-                        <button type="submit" class="btn btn-primary w-100"><?= lang('Auth.sendResetLink') ?></button>
+                        <button type="submit" 
+                                class="btn w-100"
+                                style="background-color: #074C87; color: white; font-weight: 500; border: none; border-radius: 0.375rem; padding: 0.625rem 1rem; font-size: 0.95rem;">
+                            <?= lang('Send Reset Link') ?>
+                        </button>
                     </form>
-                    <hr>
-                    <a href="<?= site_url('login') ?>">&larr; <?= lang('Auth.backToLogin') ?></a>
+                    <hr style="border-color: #e6f0fa; margin: 1.25rem 0;">
+                    <div class="text-center">
+                        <a href="<?= site_url('login') ?>" 
+                           class="text-decoration-none" 
+                           style="color: #074C87; font-weight: 500;">
+                            &larr; <?= lang('backToLogin') ?>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

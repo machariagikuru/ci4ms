@@ -3,55 +3,91 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
-            <div class="card shadow">
-                <div class="card-header text-center bg-success text-white">
-                    <h4><?= lang('Auth.register') ?></h4>
+            <div class="card border-0 shadow-sm" style="border-radius: 0.5rem; background-color: #e6f0fa;">
+                <div class="card-header text-center" style="background-color: #074C87; color: white; font-weight: 600; padding: 1.25rem; border-radius: 0.5rem 0.5rem 0 0;">
+                    <h4 class="mb-0" style="font-size: 1.25rem;"><?= lang('Auth.register') ?></h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="padding: 1.5rem;">
                     <?= view('auth/_message_block') ?>
 
                     <form action="<?= site_url('register') ?>" method="post">
                         <?= csrf_field() ?>
 
                         <div class="mb-3">
-                            <label class="form-label"><?= lang('Backend.firstName') ?></label>
-                            <input type="text" name="firstname" class="form-control" value="<?= old('firstname') ?>" required>
+                            <label class="form-label fw-medium" style="color: #074C87;"><?= lang('First Name') ?></label>
+                            <input type="text" 
+                                   name="firstname" 
+                                   class="form-control" 
+                                   value="<?= old('firstname') ?>" 
+                                   required
+                                   style="border: 1px solid #cbd5e1; border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 0.95rem;">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label"><?= lang('Backend.lastName') ?></label>
-                            <input type="text" name="sirname" class="form-control" value="<?= old('sirname') ?>" required>
+                            <label class="form-label fw-medium" style="color: #074C87;"><?= lang('Last Name') ?></label>
+                            <input type="text" 
+                                   name="sirname" 
+                                   class="form-control" 
+                                   value="<?= old('sirname') ?>" 
+                                   required
+                                   style="border: 1px solid #cbd5e1; border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 0.95rem;">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label"><?= lang('Auth.email') ?></label>
-                            <input type="email" name="email" class="form-control" value="<?= old('email') ?>" required>
+                            <label class="form-label fw-medium" style="color: #074C87;"><?= lang('Auth.email') ?></label>
+                            <input type="email" 
+                                   name="email" 
+                                   class="form-control" 
+                                   value="<?= old('email') ?>" 
+                                   required
+                                   style="border: 1px solid #cbd5e1; border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 0.95rem;">
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label"><?= lang('Auth.password') ?></label>
+                            <label class="form-label fw-medium" style="color: #074C87;"><?= lang('Auth.password') ?></label>
                             <div class="input-group">
-                                <input type="password" name="password" class="form-control" id="registerPassword" placeholder="••••••••" required>
-                                <button class="btn btn-outline-secondary" type="button" id="toggleRegisterPassword">
-                                    <i class="bi bi-eye"></i>
+                                <input type="password" 
+                                       name="password" 
+                                       class="form-control" 
+                                       id="registerPassword" 
+                                       placeholder="••••••••" 
+                                       required
+                                       style="border: 1px solid #cbd5e1; border-radius: 0.375rem 0 0 0.375rem; padding: 0.5rem 1rem; font-size: 0.95rem;">
+                                <button class="btn" 
+                                        type="button" 
+                                        id="toggleRegisterPassword"
+                                        style="background-color: #e6f0fa; border: 1px solid #cbd5e1; border-left: none; border-radius: 0 0.375rem 0.375rem 0; width: 44px;">
+                                    <i class="bi bi-eye" style="color: #074C87;"></i>
                                 </button>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">
+                            <label class="form-label fw-medium" style="color: #074C87;">
                                 CAPTCHA: What is <?= esc($mathCaptcha) ?>?
                             </label>
-                            <input type="number" name="captcha" class="form-control" placeholder="Enter the sum" required>
+                            <input type="number" 
+                                   name="captcha" 
+                                   class="form-control" 
+                                   placeholder="Enter the sum" 
+                                   required
+                                   style="border: 1px solid #cbd5e1; border-radius: 0.375rem; padding: 0.5rem 1rem; font-size: 0.95rem;">
                         </div>
 
-                        <button type="submit" class="btn btn-success w-100"><?= lang('Auth.registerAction') ?></button>
+                        <button type="submit" 
+                                class="btn w-100"
+                                style="background-color: #074C87; color: white; font-weight: 500; border: none; border-radius: 0.375rem; padding: 0.625rem 1rem; font-size: 0.95rem;">
+                            <?= lang('Register') ?>
+                        </button>
                     </form>
 
-                    <hr>
+                    <hr style="border-color: #e6f0fa; margin: 1.25rem 0;">
 
                     <div class="text-center">
-                        <a href="<?= site_url('login') ?>"><?= lang('Auth.alreadyRegistered') ?></a>
+                        <a href="<?= site_url('login') ?>" 
+                           style="color: #074C87; text-decoration: none; font-weight: 500;">
+                            <?= lang('Already Registered? Log In') ?>
+                        </a>
                     </div>
                 </div>
             </div>
