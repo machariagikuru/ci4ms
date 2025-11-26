@@ -123,7 +123,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="<?= route_to('notes') ?>" class="nav-link">
+                                    <a href="<?= route_to('noteList') ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Manage Notes</p>
                                     </a>
@@ -148,7 +148,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="<?= route_to('examPapers') ?>" class="nav-link">
+                                    <a href="<?= route_to('examPapersList') ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Manage Papers</p>
                                     </a>
@@ -173,7 +173,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="<?= route_to('subjects') ?>" class="nav-link">
+                                        <a href="<?= route_to('subjectList') ?>" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Manage Subjects</p>
                                     </a>

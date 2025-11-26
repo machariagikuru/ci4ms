@@ -11,7 +11,7 @@ $routes->group('backend', ['namespace' => 'Modules\Backend\Controllers'], functi
     
     // Subjects
     $routes->group('subjects', function ($routes) {
-        $routes->get('', 'SubjectsController::index', ['as' => 'subjects', 'role' => 'read']);
+        $routes->get('', 'SubjectsController::index', ['as' => 'subjectList', 'role' => 'read']);
         $routes->get('new', 'SubjectsController::create', ['as' => 'subjectCreate', 'role' => 'create']);
         $routes->post('new', 'SubjectsController::store', ['role' => 'create']);
         $routes->get('edit/(:num)', 'SubjectsController::edit/$1', ['as' => 'subjectEdit', 'role' => 'update']);
@@ -42,6 +42,7 @@ $routes->group('backend', ['namespace' => 'Modules\Backend\Controllers'], functi
 
      // Exam Papers
     $routes->group('exam-papers', function ($routes) {
+        $routes->get('', 'ExamPaperController::index', ['as' => 'examPapersList', 'role' => 'read']);
         $routes->get('upload', 'ExamPaperController::create', ['as' => 'examPaperUpload', 'role' => 'create']);
         $routes->post('upload', 'ExamPaperController::store', ['role' => 'create']);
         $routes->get('edit/(:num)', 'ExamPaperController::edit/$1', ['as' => 'examPaperEdit', 'role' => 'update']);
@@ -53,7 +54,7 @@ $routes->group('backend', ['namespace' => 'Modules\Backend\Controllers'], functi
 
     // Notes
     $routes->group('notes', function ($routes) {
-        $routes->get('', 'NotesController::index', ['as' => 'notes', 'role' => 'read']);
+        $routes->get('', 'NotesController::index', ['as' => 'noteList', 'role' => 'read']);
         $routes->get('upload', 'NotesController::create', ['as' => 'noteUpload', 'role' => 'create']);
         $routes->post('upload', 'NotesController::store', ['role' => 'create']);
         $routes->get('edit/(:num)', 'NotesController::edit/$1', ['as' => 'noteEdit', 'role' => 'update']);
