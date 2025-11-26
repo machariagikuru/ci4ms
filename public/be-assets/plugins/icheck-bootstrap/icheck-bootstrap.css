@@ -105,8 +105,8 @@
 
 .icheck-default > input:first-child:checked + label::after,
 .icheck-default > input:first-child:checked + input[type="hidden"] + label::after {
-    border-bottom-color: #333;
-    border-right-color: #333;
+    border-bottom-color: #074C87;
+    border-right-color: #074C87;
 }
 
 .icheck-primary > input:first-child:not(:checked):not(:disabled):hover + label::before,

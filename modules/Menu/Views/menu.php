@@ -12,7 +12,7 @@
         display: block;
         margin: 5px 0;
         padding: 13px 10px 13px 40px;
-        color: #333;
+        color: #074C87;
         text-decoration: none;
         font-weight: bold;
         border: 1px solid #ccc;

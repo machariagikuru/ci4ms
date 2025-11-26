@@ -40,7 +40,7 @@
                         </h1>
 
                         <?php if (!empty($infos->created_at) && $infos->created_at !== '0000-00-00 00:00:00'): ?>
-                            <div class="text-muted fst-italic mb-3" style="color: #555; font-size: 0.95rem;">
+                            <div class="text-muted fst-italic mb-3" style="color: #074C87; font-size: 0.95rem;">
                                 <?= $dateI18n->createFromTimestamp(strtotime($infos->created_at), app_timezone(), 'tr_TR')->toFormattedDateString(); ?>
                             </div>
                         <?php endif; ?>
@@ -85,7 +85,7 @@
                     <hr style="border-color: #e6f0fa;">
 
                     <!-- Post Content -->
-                    <section class="mb-5" style="color: #333; line-height: 1.8; font-size: 1.05rem;">
+                    <section class="mb-5" style="color: #074C87; line-height: 1.8; font-size: 1.05rem;">
                         <?= $infos->content ?? '' ?>
                     </section>
 
