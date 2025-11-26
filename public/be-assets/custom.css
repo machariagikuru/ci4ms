@@ -26,11 +26,11 @@
 }
 
 .navbar-kun-cms {
-  background-color: #3d9970;
+  background-color: #074C87;
 }
 
 .card-prz:not(.card-outline) > .card-header {
-  background-color: #3d9970;
+  background-color: #074C87;
 }
 
 .card-prz:not(.card-outline) > .card-header,
@@ -43,7 +43,7 @@
 }
 
 .card-prz.card-outline {
-  border-top: 3px solid #3d9970;
+  border-top: 3px solid #074C87;
 }
 
 .card-prz.card-outline-tabs > .card-header a:hover {
@@ -51,7 +51,7 @@
 }
 
 .card-prz.card-outline-tabs > .card-header a.active {
-  border-top: 3px solid #3d9970;
+  border-top: 3px solid #074C87;
 }
 
 .bg-prz .btn-tool,

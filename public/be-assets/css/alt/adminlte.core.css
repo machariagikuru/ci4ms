@@ -13056,13 +13056,13 @@ body:not(.layout-fixed) .main-sidebar .sidebar {
 
 .sidebar-dark-olive .nav-sidebar > .nav-item > .nav-link.active,
 .sidebar-light-olive .nav-sidebar > .nav-item > .nav-link.active {
-  background-color: #3d9970;
+  background-color: #074C87;
   color: #fff;
 }
 
 .sidebar-dark-olive .nav-sidebar.nav-legacy > .nav-item > .nav-link.active,
 .sidebar-light-olive .nav-sidebar.nav-legacy > .nav-item > .nav-link.active {
-  border-color: #3d9970;
+  border-color: #074C87;
 }
 
 .sidebar-dark-lime .nav-sidebar > .nav-item > .nav-link.active,
@@ -16455,7 +16455,7 @@ body.text-sm .control-sidebar {
 }
 
 .navbar-olive {
-  background-color: #3d9970;
+  background-color: #074C87;
   color: #fff;
 }
 
@@ -21920,7 +21920,7 @@ blockquote.quote-navy h6 {
 }
 
 blockquote.quote-olive {
-  border-color: #3d9970;
+  border-color: #074C87;
 }
 
 blockquote.quote-olive h1,
@@ -21929,7 +21929,7 @@ blockquote.quote-olive h3,
 blockquote.quote-olive h4,
 blockquote.quote-olive h5,
 blockquote.quote-olive h6 {
-  color: #3d9970;
+  color: #074C87;
 }
 
 blockquote.quote-lime {
@@ -22312,7 +22312,7 @@ blockquote.quote-gray-dark h6 {
 }
 
 .dark-mode blockquote.quote-olive {
-  border-color: #3d9970;
+  border-color: #074C87;
 }
 
 .dark-mode blockquote.quote-olive h1,
@@ -22321,7 +22321,7 @@ blockquote.quote-gray-dark h6 {
 .dark-mode blockquote.quote-olive h4,
 .dark-mode blockquote.quote-olive h5,
 .dark-mode blockquote.quote-olive h6 {
-  color: #3d9970;
+  color: #074C87;
 }
 
 .dark-mode blockquote.quote-lime {
@@ -22617,7 +22617,7 @@ blockquote.quote-gray-dark h6 {
 }
 
 .text-olive {
-  color: #3d9970 !important;
+  color: #074C87 !important;
 }
 
 .text-lime {
@@ -22989,7 +22989,7 @@ blockquote.quote-gray-dark h6 {
 }
 
 .bg-olive {
-  background-color: #3d9970 !important;
+  background-color: #074C87 !important;
 }
 
 .bg-olive,
@@ -23571,7 +23571,7 @@ blockquote.quote-gray-dark h6 {
   }
   .table td.bg-olive,
   .table th.bg-olive {
-    background-color: #3d9970 !important;
+    background-color: #074C87 !important;
   }
   .table td.bg-olive,
   .table td.bg-olive > a,
@@ -24280,7 +24280,7 @@ blockquote.quote-gray-dark h6 {
 }
 
 .bg-gradient-olive {
-  background: #3d9970 linear-gradient(180deg, #5aa885, #3d9970) repeat-x !important;
+  background: #074C87 linear-gradient(180deg, #5aa885, #074C87) repeat-x !important;
   color: #fff;
 }
 
@@ -24290,20 +24290,20 @@ blockquote.quote-gray-dark h6 {
 }
 
 .bg-gradient-olive.btn:hover {
-  background: #3d9970 linear-gradient(180deg, #519174, #327e5c) repeat-x !important;
+  background: #074C87 linear-gradient(180deg, #519174, #327e5c) repeat-x !important;
   border-color: #2e7555;
   color: #ececec;
 }
 
 .bg-gradient-olive.btn:not(:disabled):not(.disabled):active, .bg-gradient-olive.btn:not(:disabled):not(.disabled).active, .bg-gradient-olive.btn:active, .bg-gradient-olive.btn.active {
-  background: #3d9970 linear-gradient(180deg, #4e896f, #2e7555) repeat-x !important;
+  background: #074C87 linear-gradient(180deg, #4e896f, #2e7555) repeat-x !important;
   border-color: #2b6b4f;
   color: #fff;
 }
 
 .bg-gradient-olive.btn:disabled, .bg-gradient-olive.btn.disabled {
   background-image: none !important;
-  border-color: #3d9970;
+  border-color: #074C87;
   color: #fff;
 }
 
@@ -25492,7 +25492,7 @@ a.text-muted:hover {
 .accent-olive .btn-link,
 .accent-olive a:not(.dropdown-item):not(.btn-app):not(.nav-link):not(.brand-link):not(.page-link):not(.badge):not(.btn),
 .accent-olive .nav-tabs .nav-link {
-  color: #3d9970;
+  color: #074C87;
 }
 
 .accent-olive .btn-link:hover,
@@ -25502,12 +25502,12 @@ a.text-muted:hover {
 }
 
 .accent-olive .dropdown-item:active, .accent-olive .dropdown-item.active {
-  background-color: #3d9970;
+  background-color: #074C87;
   color: #fff;
 }
 
 .accent-olive .custom-control-input:checked ~ .custom-control-label::before {
-  background-color: #3d9970;
+  background-color: #074C87;
   border-color: #20503b;
 }
 
@@ -25523,13 +25523,13 @@ a.text-muted:hover {
 }
 
 .accent-olive .page-item .page-link {
-  color: #3d9970;
+  color: #074C87;
 }
 
 .accent-olive .page-item.active a,
 .accent-olive .page-item.active .page-link {
-  background-color: #3d9970;
-  border-color: #3d9970;
+  background-color: #074C87;
+  border-color: #074C87;
   color: #fff;
 }
 
@@ -28797,7 +28797,7 @@ a.text-muted:hover {
 
 .dark-mode .accent-olive .custom-control-input:checked ~ .custom-control-label::before {
   background-color: #74c8a3;
-  border-color: #3d9970;
+  border-color: #074C87;
 }
 
 .dark-mode .accent-olive .custom-control-input:checked ~ .custom-control-label::after {

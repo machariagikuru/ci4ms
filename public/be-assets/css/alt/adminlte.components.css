@@ -707,7 +707,7 @@ body.text-sm .input-group-text {
 }
 
 .custom-switch.custom-switch-off-olive .custom-control-input ~ .custom-control-label::before {
-  background-color: #3d9970;
+  background-color: #074C87;
   border-color: #20503b;
 }
 
@@ -720,7 +720,7 @@ body.text-sm .input-group-text {
 }
 
 .custom-switch.custom-switch-on-olive .custom-control-input:checked ~ .custom-control-label::before {
-  background-color: #3d9970;
+  background-color: #074C87;
   border-color: #20503b;
 }
 
@@ -1565,7 +1565,7 @@ body.text-sm .input-group-text {
 }
 
 .custom-range.custom-range-olive::-webkit-slider-thumb {
-  background-color: #3d9970;
+  background-color: #074C87;
 }
 
 .custom-range.custom-range-olive::-webkit-slider-thumb:active {
@@ -1573,7 +1573,7 @@ body.text-sm .input-group-text {
 }
 
 .custom-range.custom-range-olive::-moz-range-thumb {
-  background-color: #3d9970;
+  background-color: #074C87;
 }
 
 .custom-range.custom-range-olive::-moz-range-thumb:active {
@@ -1581,7 +1581,7 @@ body.text-sm .input-group-text {
 }
 
 .custom-range.custom-range-olive::-ms-thumb {
-  background-color: #3d9970;
+  background-color: #074C87;
 }
 
 .custom-range.custom-range-olive::-ms-thumb:active {
@@ -2489,8 +2489,8 @@ body.text-sm .input-group-text {
 }
 
 .custom-control-input-olive:checked ~ .custom-control-label::before {
-  border-color: #3d9970;
-  background-color: #3d9970;
+  border-color: #074C87;
+  background-color: #074C87;
 }
 
 .custom-control-input-olive.custom-control-input-outline:checked[type="checkbox"] ~ .custom-control-label::after {
@@ -4369,7 +4369,7 @@ body.text-sm .input-group-text {
 
 .dark-mode .custom-switch.custom-switch-off-olive .custom-control-input ~ .custom-control-label::before {
   background-color: #74c8a3;
-  border-color: #3d9970;
+  border-color: #074C87;
 }
 
 .dark-mode .custom-switch.custom-switch-off-olive .custom-control-input:focus ~ .custom-control-label::before {
@@ -4382,7 +4382,7 @@ body.text-sm .input-group-text {
 
 .dark-mode .custom-switch.custom-switch-on-olive .custom-control-input:checked ~ .custom-control-label::before {
   background-color: #74c8a3;
-  border-color: #3d9970;
+  border-color: #074C87;
 }
 
 .dark-mode .custom-switch.custom-switch-on-olive .custom-control-input:checked:focus ~ .custom-control-label::before {
@@ -6287,7 +6287,7 @@ body.text-sm .input-group-text {
 }
 
 .card-olive:not(.card-outline) > .card-header {
-  background-color: #3d9970;
+  background-color: #074C87;
 }
 
 .card-olive:not(.card-outline) > .card-header,
@@ -6300,7 +6300,7 @@ body.text-sm .input-group-text {
 }
 
 .card-olive.card-outline {
-  border-top: 3px solid #3d9970;
+  border-top: 3px solid #074C87;
 }
 
 .card-olive.card-outline-tabs > .card-header a:hover {
@@ -6309,7 +6309,7 @@ body.text-sm .input-group-text {
 
 .card-olive.card-outline-tabs > .card-header a.active,
 .card-olive.card-outline-tabs > .card-header a.active:hover {
-  border-top: 3px solid #3d9970;
+  border-top: 3px solid #074C87;
 }
 
 .bg-olive > .card-header .btn-tool,
@@ -7923,7 +7923,7 @@ html.maximized-card {
 }
 
 .todo-list .olive {
-  border-left-color: #3d9970;
+  border-left-color: #074C87;
 }
 
 .todo-list .lime {
