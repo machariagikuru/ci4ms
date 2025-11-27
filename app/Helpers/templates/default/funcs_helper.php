@@ -1,21 +1,29 @@
 <?php
+
 if (!function_exists('comments')) {
     function comments(array $comments, string $blog_id)
     {
         $returnData = '';
         foreach ($comments as $comment) {
             if ($comment->parent_id == null) {
+                $captchaId = 'captcha-question-reply-' . $comment->id;
+
                 $returnData .= '<div class="d-flex mb-4">
 <div class="flex-shrink-0"><img class="rounded-circle" src="https://dummyimage.com/50x50/ced4da/6c757d.jpg"/></div>
 <div class="ms-3">
-<div class="fw-bold">' . $comment->comFullName . '</div>' . $comment->comMessage . '
+<div class="fw-bold">' . esc($comment->comFullName) . '</div>' . esc($comment->comMessage) . '
 <div class="w-100"></div>
 <div class="btn-group">
-<button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#reply' . $comment->id . '" aria-expanded="false" aria-controls="reply' . $comment->id . '">Reply</button>';
-                if ((bool)$comment->isThereAnReply === true)
+<button class="btn btn-sm btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#reply' . $comment->id . '" aria-expanded="false" aria-controls="reply' . $comment->id . '" 
+    onclick="loadReplyCaptcha(\'' . $captchaId . '\')">Reply</button>';
+
+                if ((bool)$comment->isThereAnReply === true) {
                     $returnData .= '<button class="btn btn-sm btn-link" onclick="replies(' . $comment->id . ')" type="button" data-bs-toggle="collapse"
 data-bs-target="#replies' . $comment->id . '" aria-expanded="false" aria-controls="' . $comment->id . '">Replies <i class="bi-caret-down-fill"></i></button>';
-                $returnData .= '</div><div class="collapse" id="reply' . $comment->id . '">
+                }
+
+                $returnData .= '</div>
+<div class="collapse" id="reply' . $comment->id . '">
 <div class="card card-body">
 <form class="mb-1 row">
 <div class="col-md-6 form-group mb-3">
@@ -29,9 +37,12 @@ data-bs-target="#replies' . $comment->id . '" aria-expanded="false" aria-control
 </div>
 <div class="col-6 form-group">
 <div class="input-group">
-<img src="" class="captcha" alt="captcha">
-<input type="text" placeholder="captcha" name="captcha" class="form-control">
-<button class="btn btn-secondary" onclick="captchaF()" type="button">New Captcha</button>
+<span id="' . $captchaId . '" class="input-group-text" style="background-color: #f8f9fa; border-color: #ced4da;">
+Loading...
+</span>
+<input type="text" placeholder="Answer" name="captcha" class="form-control">
+<button class="btn btn-secondary" type="button" 
+    onclick="loadReplyCaptcha(\'' . $captchaId . '\')">New</button>
 </div>
 </div>
 <div class="col-6 form-group text-end">
@@ -40,10 +51,13 @@ data-bs-target="#replies' . $comment->id . '" aria-expanded="false" aria-control
 </form>
 </div>
 </div>';
-                if ((bool)$comment->isThereAnReply === true)
+
+                if ((bool)$comment->isThereAnReply === true) {
                     $returnData .= '<div class="collapse" id="replies' . $comment->id . '"></div>';
+                }
+
                 $returnData .= '</div>
-                </div>';
+</div>';
             }
         }
         return $returnData;

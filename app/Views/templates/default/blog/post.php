@@ -113,17 +113,19 @@
                                         placeholder="Join the discussion and leave a comment!"
                                         style="border-color: #cbd5e1;"><?= old('comMessage') ?></textarea>
                                 </div>
-                                <div class="col-6 form-group">
-                                    <div class="input-group">
-                                        <img src="" class="captcha" alt="captcha">
-                                        <input type="text" placeholder="captcha" name="captcha" class="form-control" style="border-color: #cbd5e1;">
-                                        <button class="btn" type="button" onclick="captchaF()"
-                                            style="background-color: #074C87; color: white; border: none;">
-                                            New Captcha
-                                        </button>
+                               <div class="col-6 form-group">
+                                        <div class="input-group">
+                                            <span id="captcha-question" class="input-group-text" style="background-color: #f8f9fa; border-color: #cbd5e1;">
+                                                Loading...
+                                            </span>
+                                            <input type="text" placeholder="Answer" name="captcha" class="form-control" style="border-color: #cbd5e1;">
+                                            <button class="btn" type="button" onclick="captchaF()"
+                                                style="background-color: #074C87; color: white; border: none;">
+                                                New
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-6 form-group text-end">
+                                    <div class="col-6 form-group text-end">
                                     <button class="btn btn-sm sendComment" type="button"
                                         data-id=""
                                         data-blogid="<?= esc($infos->id ?? '') ?>"
@@ -203,5 +205,55 @@ function copyLink() {
         });
     });
 }
+
+// Load CAPTCHA for main comment form
+function captchaF() {
+    fetch('<?= site_url('commentCaptcha') ?>', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.capQuestion) {
+            document.getElementById('captcha-question').textContent = data.capQuestion;
+        } else {
+            Swal.fire('Error', 'Failed to load CAPTCHA.', 'error');
+        }
+    })
+    .catch(() => {
+        Swal.fire('Error', 'Network error. Please try again.', 'error');
+    });
+}
+
+// Load CAPTCHA for reply forms (accepts element ID)
+function loadReplyCaptcha(captchaElementId) {
+    fetch('<?= site_url('commentCaptcha') ?>', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const element = document.getElementById(captchaElementId);
+        if (element && data.capQuestion) {
+            element.textContent = data.capQuestion;
+        } else {
+            Swal.fire('Error', 'Failed to load CAPTCHA.', 'error');
+        }
+    })
+    .catch(() => {
+        Swal.fire('Error', 'Network error. Please try again.', 'error');
+    });
+}
+
+// Load main CAPTCHA when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    captchaF();
+});
 </script>
 <?= $this->endSection() ?>

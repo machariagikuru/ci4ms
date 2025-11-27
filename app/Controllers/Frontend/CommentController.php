@@ -25,18 +25,17 @@ class CommentController extends BaseController
             return $this->failForbidden();
         }
 
-        $cap = new \Gregwar\Captcha\CaptchaBuilder();
-        $cap->setBackgroundColor(139, 203, 183);
-        $cap->setIgnoreAllEffects(false);
-        $cap->setMaxFrontLines(0);
-        $cap->setMaxBehindLines(0);
-        $cap->setMaxAngle(1);
-        $cap->setTextColor(18, 58, 73);
-        $cap->setLineColor(18, 58, 73);
-        $cap->build();
+        // Generate two random numbers between 1 and 20
+        $num1 = random_int(1, 20);
+        $num2 = random_int(1, 20);
+        $answer = $num1 + $num2;
 
-        session()->setFlashdata('cap', $cap->getPhrase());
-        return $this->respond(['capIMG' => $cap->inline()], 200);
+        // Store the correct answer in the session (not flashdata)
+        session()->set('comment_captcha_answer', $answer);
+
+        // Return the question as a string
+        $question = "$num1 + $num2 = ?";
+        return $this->respond(['capQuestion' => $question], 200);
     }
 
     public function newComment()
@@ -49,14 +48,20 @@ class CommentController extends BaseController
             'comFullName' => ['label' => 'Full name', 'rules' => 'required'],
             'comEmail'    => ['label' => 'E-mail', 'rules' => 'required|valid_email'],
             'comMessage'  => ['label' => 'Join the discussion and leave a comment!', 'rules' => 'required'],
-            'captcha'     => ['Captcha' => 'Captcha', 'rules' => 'required']
+            'captcha'     => ['label' => 'Captcha', 'rules' => 'required']
         ];
 
         if (!$this->validate($valData)) {
             return $this->fail($this->validator->getErrors());
         }
 
-        if ($this->request->getPost('captcha') == session()->getFlashdata('cap')) {
+        $userAnswer = $this->request->getPost('captcha');
+        $correctAnswer = session()->get('comment_captcha_answer');
+
+        // Clear CAPTCHA from session after use (prevent replay)
+        session()->remove('comment_captcha_answer');
+
+        if ($userAnswer !== null && (int)$userAnswer === (int)$correctAnswer) {
             $badwordFilterSettings = json_decode($this->commonModel->selectOne(
                 'settings',
                 ['option' => 'badwords'],
@@ -75,8 +80,8 @@ class CommentController extends BaseController
             }
 
             $data = [
-                'blog_id'    => $this->request->getPost('blog_id'),
-                'created_at' => date('Y-m-d H:i:s'),
+                'blog_id'     => $this->request->getPost('blog_id'),
+                'created_at'  => date('Y-m-d H:i:s'),
                 'comFullName' => $this->request->getPost('comFullName'),
                 'comEmail'    => $this->request->getPost('comEmail'),
                 'comMessage'  => $checked
@@ -96,7 +101,7 @@ class CommentController extends BaseController
             }
         }
 
-        return $this->fail('Please get a new captcha !');
+        return $this->fail('Incorrect Capcha! Click new to refresh.');
     }
 
     public function repliesComment()
@@ -153,6 +158,4 @@ class CommentController extends BaseController
             'count' => count($comments)
         ], 200);
     }
-
-    // We will move methods here in the next step
 }

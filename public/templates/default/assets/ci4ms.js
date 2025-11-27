@@ -82,7 +82,7 @@ $(".sendComment").on("click", function () {
     dataType: "json",
     success: function (data) {
       if (data.result === true)
-        Swal.fire("You send successfully your comment", "", "success").then(
+        Swal.fire("Your comment has been saved successfully", "", "success").then(
           function (isConfirm) {
             if (isConfirm) location.reload(true);
           }
