@@ -55,7 +55,7 @@
                         </a>
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             <label class="btn btn-outline-primary <?=((bool)$commentInfo->isApproved===true)?'checked':''?>">
-                                <input type="radio" name="options" value="1" id="option1" <?=((bool)$commentInfo->isApproved===true)?'checked':''?> required> <?=lqng('Blog.publish')?>
+                                <input type="radio" name="options" value="1" id="option1" <?=((bool)$commentInfo->isApproved===true)?'checked':''?> required> <?=lang('Blog.publish')?>
                             </label>
                             <label class="btn btn-outline-danger">
                                 <input type="radio" name="options" value="2" id="option2" required> <?=lang('Backend.delete')?>
